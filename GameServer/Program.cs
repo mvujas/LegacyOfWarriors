@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Specialized;
 using GameServer;
 using GameServer.Database;
 using MySql.Data.MySqlClient;
 using GameServer.Model;
 using GameServer.DataAccessLayer;
 using GameServer.ServiceLayer;
+using System.Configuration;
 
 namespace GameServer
 {
@@ -17,7 +19,9 @@ namespace GameServer
 
         static void Main(string[] args)
         {
-            MySQLDatabaseManager.SetInstance(new MySQLDatabaseManager("localhost", "root", "game_db", 3306, ""));
+            NameValueCollection dbConfig = ConfigurationManager.GetSection("databaseSettings") as NameValueCollection;
+            MySQLDatabaseManager.SetInstance(new MySQLDatabaseManager(
+                dbConfig["server"], dbConfig["user"], dbConfig["database"], Int32.Parse(dbConfig["port"]), dbConfig["password"]));
 
             try
             {
@@ -31,6 +35,7 @@ namespace GameServer
 
             UserDao.GetInstance().GetAllUsers().ForEach(PrintUser);
             
+            Console.WriteLine(dbConfig["server"]);
 
             Console.WriteLine("Press any key...");
             Console.ReadKey();

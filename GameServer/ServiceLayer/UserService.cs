@@ -59,7 +59,7 @@ namespace GameServer.ServiceLayer
             }
             else if (UserDao.GetInstance().GetUserByUsername(username) != null)
             {
-                exceptionMessage = "Vec postoji korisnik sa datim username-om";
+                exceptionMessage = "Vec postoji korisnik sa unetim username-om";
             }
 
             if (exceptionMessage != null)
@@ -85,7 +85,7 @@ namespace GameServer.ServiceLayer
             if(!ok)
             {
                 throw new UserLoginRegistrationException(
-                    "Doslo je do greske prilikom unosa korisnika u bazu, pokusajte sa drugim username-om");
+                    "Doslo je do greske prilikom unosa korisnika u bazu, pokusajte kasnije");
             }
         }
     }
