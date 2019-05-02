@@ -4,6 +4,7 @@ using GameServer.Database;
 using MySql.Data.MySqlClient;
 using GameServer.Model;
 using GameServer.DataAccessLayer;
+using GameServer.ServiceLayer;
 
 namespace GameServer
 {
@@ -18,16 +19,18 @@ namespace GameServer
         {
             MySQLDatabaseManager.SetInstance(new MySQLDatabaseManager("localhost", "root", "game_db", 3306, ""));
 
-            MySQLDatabaseManager manager = MySQLDatabaseManager.GetInstance();
+            try
+            {
+                UserService.VerifyUser("mvujas", "nekaGlupavaSifra");
+                UserService.RegisterUser("mvujas", "nekaGlupavaSifra");
+            }
+            catch(UserLoginRegistrationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            UserDao.GetInstance().GetAllUsers().ForEach(PrintUser);
             
-            UserDao userDao = UserDao.GetInstance();
-            userDao.GetAllUsers().ForEach(PrintUser);
-
-            Console.WriteLine(" -- break -- ");
-
-            Console.WriteLine(userDao.AddUser("perica", "marica"));
-                
-            userDao.GetAllUsers().ForEach(PrintUser);
 
             Console.WriteLine("Press any key...");
             Console.ReadKey();
