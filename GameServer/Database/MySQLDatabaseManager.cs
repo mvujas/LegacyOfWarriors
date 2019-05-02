@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,21 +52,44 @@ namespace GameServer.Database
                     transactionBlock(connection, transaction);
                     transaction.Commit();
                 }
-                catch(MySqlException ex)
+                catch(MySqlException)
                 {
                     ok = false;
-                    Console.WriteLine(ex);
                     try
                     {
                         transaction.Rollback();
                     }
-                    catch (MySqlException ex1)
+                    catch (MySqlException)
                     {
-                        Console.WriteLine(ex1);
                     }
                 }
             }
             return ok;
+        }
+
+        public IEnumerable<IDataRecord> SelectData(string query, params MySqlParameter[] pars)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            using (MySqlCommand cmd = new MySqlCommand(query, connection))
+            {
+                connection.Open();
+
+                if (pars != null)
+                {
+                    foreach (MySqlParameter p in pars)
+                    {
+                        cmd.Parameters.Add(p);
+                    }
+                }
+
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        yield return reader;
+                    }
+                }
+            }
         }
     }
 }
