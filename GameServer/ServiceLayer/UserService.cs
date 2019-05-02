@@ -46,12 +46,17 @@ namespace GameServer.ServiceLayer
         }
 
         private static int MINIMUM_USERNAME_LENGTH = 5;
+        private static int MAXIMUM_USERNAME_LENGTH = 32;
         private static void CheckUsernameValidity(string username)
         {
             string exceptionMessage = null;
             if (username.Length < MINIMUM_USERNAME_LENGTH)
             {
                 exceptionMessage = String.Format("Username mora biti duzine barem {0}", MINIMUM_USERNAME_LENGTH);
+            }
+            else if (username.Length > MAXIMUM_USERNAME_LENGTH)
+            {
+                exceptionMessage = String.Format("Username moze biti duzine maksimalno {0}", MAXIMUM_USERNAME_LENGTH);
             }
             else if (username.Contains(" "))
             {

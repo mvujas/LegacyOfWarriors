@@ -25,7 +25,6 @@ namespace GameServer
 
             try
             {
-                UserService.VerifyUser("mvujas", "nekaGlupavaSifra");
                 UserService.RegisterUser("mvujas", "nekaGlupavaSifra");
             }
             catch(UserLoginRegistrationException ex)
