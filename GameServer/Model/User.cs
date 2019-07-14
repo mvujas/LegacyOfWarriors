@@ -4,20 +4,17 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper.Contrib;
+using Dapper.Contrib.Extensions;
 
 namespace GameServer.Model
 {
+    [Table("user")]
     public class User
     {
-        public long Id { get; private set; }
-        public string Username { get; private set; }
+        [Key]
+        public long Id { get; set; }
+        public string Username { get; set; }
         public string PasswordHash { get; set; }
-
-        public User(long id, string username, string passwordHash)
-        {
-            Id = id;
-            Username = username;
-            PasswordHash = passwordHash;
-        }  
     }
 }

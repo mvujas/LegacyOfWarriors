@@ -1,42 +1,50 @@
-﻿using System;
+﻿using GameServer.Database;
 using System.Collections.Specialized;
-using GameServer;
-using GameServer.Database;
-using MySql.Data.MySqlClient;
-using GameServer.Model;
-using GameServer.DataAccessLayer;
-using GameServer.ServiceLayer;
 using System.Configuration;
+using System;
+using GameServer.Repositories;
 
 namespace GameServer
 {
-    class Program
+    public class Program
     {
-        static void PrintUser(User u)
+        public static void Main(string[] args)
         {
-            Console.WriteLine(String.Format("{0} {1} {2}", u.Id, u.Username, u.PasswordHash));
-        }
+            Config.Prepare();
 
-        static void Main(string[] args)
-        {
-            NameValueCollection dbConfig = ConfigurationManager.GetSection("databaseSettings") as NameValueCollection;
-            MySQLDatabaseManager.SetInstance(new MySQLDatabaseManager(
-                dbConfig["server"], dbConfig["user"], dbConfig["database"], Int32.Parse(dbConfig["port"]), dbConfig["password"]));
+            Initializer.Initialize();
 
-            try
-            {
-                UserService.RegisterUser("mvujas", "nekaGlupavaSifra");
+            UserRepository userRepo = new UserRepository();
+
+            try {
+                userRepo.Add(new Model.User
+                {
+                    Username = "milos",
+                    PasswordHash = "abc"
+                });
             }
-            catch(UserLoginRegistrationException ex)
-            {
-                Console.WriteLine(ex.Message);
+            catch(Exception) {
+                Console.WriteLine("Izuzetak");
             }
 
-            UserDao.GetInstance().GetAllUsers().ForEach(PrintUser);
-            
-            Console.WriteLine(dbConfig["server"]);
+            var user = userRepo.GetById(1);
 
-            Console.WriteLine("Press any key...");
+            Console.WriteLine(
+                "Id: {0}\nUsername: {1}\nSifra: {2}", user.Id, user.Username, user.PasswordHash);
+
+            Console.WriteLine("Get by username: ");
+            user = userRepo.GetByUsername("pera");
+            Console.WriteLine(
+                "Id: {0}\nUsername: {1}\nSifra: {2}", user.Id, user.Username, user.PasswordHash);
+
+
+
+            Console.WriteLine("Svi:");
+            foreach(var user1 in userRepo.GetAll()) {
+                Console.WriteLine(
+                    "Id: {0}\nUsername: {1}\nSifra: {2}", user1.Id, user1.Username, user1.PasswordHash);
+            }
+
             Console.ReadKey();
         }
     }
