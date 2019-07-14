@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dapper;
 using GameServer.Model;
-using Dapper;
+using System;
 
 namespace GameServer.Repositories
 {
@@ -20,6 +16,28 @@ namespace GameServer.Repositories
                         Username = username
                     }
                 );
+            });
+        }
+
+        public bool DoesUserExist(string username)
+        {
+            return StatefulConnectionRunningWrapper<bool>(connection =>
+            {
+                try
+                {
+                    connection.QueryFirst(
+                        @"SELECT 1 FROM User WHERE username = @Username",
+                        new
+                        {
+                            Username = username
+                        }
+                    );
+                    return true;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
             });
         }
     }

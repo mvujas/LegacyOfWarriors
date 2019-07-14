@@ -1,13 +1,24 @@
-﻿using GameServer.Database;
-using System.Collections.Specialized;
-using System.Configuration;
-using System;
+﻿using GameServer.Logic;
 using GameServer.Repositories;
+using System;
 
 namespace GameServer
 {
     public class Program
     {
+        public static void print(Model.User user)
+        {
+            if(user == null)
+            {
+                Console.WriteLine("Nema korisnika");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"User {user.Username} (id {user.Id}), password {user.PasswordHash}");
+            }
+        }
+
         public static void Main(string[] args)
         {
             Config.Prepare();
@@ -16,36 +27,21 @@ namespace GameServer
 
             UserRepository userRepo = new UserRepository();
 
-            try {
-                userRepo.Add(new Model.User
-                {
-                    Username = "milos",
-                    PasswordHash = "abc"
-                });
+            try
+            {
+                print(UserLogic.GetUserByLoginInfo("milos1", "perakralj123"));
+                print(UserLogic.GetUserByLoginInfo("milos2", "perakralj123"));
+                UserLogic.RegisterUser("milos2", "perakralj123");
             }
-            catch(Exception) {
-                Console.WriteLine("Izuzetak");
+            catch(Exception e)
+            {
+                Console.WriteLine("Greska: {0}", e.Message);
             }
 
-            var user = userRepo.GetById(1);
-
-            Console.WriteLine(
-                "Id: {0}\nUsername: {1}\nSifra: {2}", user.Id, user.Username, user.PasswordHash);
-
-            Console.WriteLine("Get by username: ");
-            user = userRepo.GetByUsername("pera");
-            Console.WriteLine(
-                "Id: {0}\nUsername: {1}\nSifra: {2}", user.Id, user.Username, user.PasswordHash);
-
-
-
-            Console.WriteLine("Svi:");
-            foreach(var user1 in userRepo.GetAll()) {
-                Console.WriteLine(
-                    "Id: {0}\nUsername: {1}\nSifra: {2}", user1.Id, user1.Username, user1.PasswordHash);
-            }
+            print(UserLogic.GetUserById(1));
 
             Console.ReadKey();
+
         }
     }
 }
