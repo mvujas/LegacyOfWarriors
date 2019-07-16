@@ -1,46 +1,57 @@
 ﻿using GameServer.Logic;
 using GameServer.Repositories;
 using System;
+using GameServer.Net;
+using Utils.Net;
+using System.Net;
+using ProjectLevelConfig;
 
 namespace GameServer
 {
-    public class Program
+    class CustomEventHandlingContainer : EventHandlingContainer
     {
-        public static void print(Model.User user)
+        public void OnMessageError(AsyncUserToken userToken)
         {
-            if(user == null)
-            {
-                Console.WriteLine("Nema korisnika");
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"User {user.Username} (id {user.Id}), password {user.PasswordHash}");
-            }
+            throw new NotImplementedException();
         }
 
+        public void OnMessageReceived(MessageWrapper message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnUserConnect(AsyncUserToken userToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnUserDisconnect(AsyncUserToken userToken)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Program
+    {
         public static void Main(string[] args)
         {
             Config.Prepare();
 
             Initializer.Initialize();
 
-            UserRepository userRepo = new UserRepository();
+            SocketServer socketServer = new SocketServer(
+                100,
+                100,
+                new CustomEventHandlingContainer()
+            );
 
-            try
-            {
-                print(UserLogic.GetUserByLoginInfo("milos1", "perakralj123"));
-                print(UserLogic.GetUserByLoginInfo("milos2", "perakralj123"));
-                UserLogic.RegisterUser("milos2", "perakralj123");
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("Greska: {0}", e.Message);
-            }
+            IPEndPoint endPoint = NetUtils.CreateEndPoint(
+                SocketServerConfig.HOST,
+                SocketServerConfig.PORT
+            );
 
-            print(UserLogic.GetUserById(1));
+            socketServer.Start(endPoint);
 
-            Console.ReadKey();
 
         }
     }

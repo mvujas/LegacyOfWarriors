@@ -7,6 +7,7 @@ using System.Threading;
 using Utils.DataTypes;
 using Utils;
 using Utils.Delegates;
+using Utils.Net;
 
 namespace GameServer.Net
 {
@@ -85,7 +86,7 @@ namespace GameServer.Net
                 AsyncUserToken userToken = new AsyncUserToken();
                 userToken.ReadEventArgs = m_readSocketPool.GetObject();
                 userToken.WriteEventArgs = m_writeSocketPool.GetObject();
-                userToken.OnMessageFullyReceived += m_eventHandlers.OnMessageReceived;
+                userToken.OnMessageFullyReceived = m_eventHandlers.OnMessageReceived;
                 return userToken;
             };
             m_userTokens = new ObjectPool<AsyncUserToken>(userTokenSupplier, m_numConnections);
@@ -141,7 +142,7 @@ namespace GameServer.Net
             AsyncUserToken userToken = m_userTokens.GetObject();
             userToken.Socket = e.AcceptSocket;
 
-            OnConnect.BeginInvoke(this, userToken, null, null);
+            //OnConnect.BeginInvoke(this, userToken, null, null);
 
             StartAccept(e);
         }
@@ -176,15 +177,7 @@ namespace GameServer.Net
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                byte[] buffer = e.Buffer;
-                int length = BitConverter.ToInt32(buffer, 0);
-                MessageWrapper messageWrapper = new MessageWrapper
-                {
-                    UserToken = token,
-                    Message = ArrayUtils.SubArray<byte>(buffer, 4, length)
-                };
-
-                OnMessageReceived.BeginInvoke(this, messageWrapper, null, null);
+                token.Process(e.Buffer);
             }
             else
             {
@@ -237,7 +230,7 @@ namespace GameServer.Net
             token.Socket.Close();
             token.Socket = null;
 
-            OnDisconnect.BeginInvoke(this, token, result => {
+            /*OnDisconnect.BeginInvoke(this, token, result => {
                 Interlocked.Decrement(ref m_currentlyConnectedUsers);
 
                 m_userTokens.ReleaseObject(token);
@@ -245,7 +238,7 @@ namespace GameServer.Net
                 m_writeSocketPool.ReleaseObject(token.WriteEventArgs);
 
                 m_maxClientsAccepted.Release();
-            }, null);
+            }, null);*/
         }
 
 

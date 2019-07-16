@@ -12,5 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataTypes\ObjectPool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\AsyncUserToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\EventHandlingContainer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\MessageReceiver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\MessageTransformer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\MessageWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\NetUtils.cs" />
   </ItemGroup>
 </Project>

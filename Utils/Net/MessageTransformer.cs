@@ -1,7 +1,8 @@
 ﻿using System;
-using Utils;
+using System.Collections.Generic;
+using System.Text;
 
-namespace GameServer.Net
+namespace Utils.Net
 {
     public static class MessageTransformer
     {
