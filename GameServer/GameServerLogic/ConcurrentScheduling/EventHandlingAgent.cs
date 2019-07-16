@@ -9,7 +9,6 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
     {
         private EventHandlingQueue m_queue;
         private object m_notifier;
-        private bool gotOne = false;
 
         public EventHandlingAgent(EventHandlingQueue queue, object notifier)
         {
@@ -45,18 +44,15 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
             EventQueueEntry entry = m_queue.GetEntryToProcess();
             if(entry != null)
             {
+                Console.WriteLine("Uzeo lock!");
                 try
                 {
-                    if(!gotOne)
-                    {
-                        gotOne = !gotOne;
-                        Console.WriteLine("Got one!");
-                    }
                     entry.runnable();
                 }
                 finally
                 {
                     m_queue.RemoveEntryAndReleaseLock(entry);
+                    Console.WriteLine("Pustam lock!");
                 }
             }
         }

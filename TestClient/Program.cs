@@ -27,6 +27,40 @@ namespace TestClient
             }
         }
 
+        static int count = 0;
+
+        static void ProcessSend(object sender, SocketAsyncEventArgs e)
+        {
+            if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+            {
+                if(count < 100)
+                {
+                    SendNext((AsyncUserToken)e.UserToken);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Greska!");
+            }
+        }
+
+        static void SendNext(AsyncUserToken userToken)
+        {
+            int i = count++;
+
+            Console.WriteLine("Saljem poruku broj: " + i);
+
+            byte[] message = MessageTransformer.PrepareMessageForSending(
+                        Encoding.ASCII.GetBytes("Neka poruka numero: " + i));
+
+            Console.WriteLine("Duzina: " + message.Length);
+            userToken.WriteEventArgs.SetBuffer(message, 0, message.Length);
+            if (!userToken.Socket.SendAsync(userToken.WriteEventArgs))
+            {
+                ProcessSend(null, userToken.WriteEventArgs);
+            }
+        }
+
         static void Main(string[] args)
         {
             IPEndPoint endPoint = NetUtils.CreateEndPoint(
@@ -56,15 +90,13 @@ namespace TestClient
                 }
             };
 
+            userToken.WriteEventArgs.Completed += ProcessSend;
+
             try
             {
                 userToken.Socket.Connect(endPoint);
 
-                Console.WriteLine("Slusam!");
-                if(!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
-                {
-                    ProcessReceive(null, userToken.ReadEventArgs);
-                }
+                SendNext(userToken);
 
                 Console.ReadKey();
             }
@@ -72,6 +104,8 @@ namespace TestClient
             {
                 Console.WriteLine("Izuzetak: \n" + e);
             }
+
+            Console.ReadKey();
         }
     }
 }

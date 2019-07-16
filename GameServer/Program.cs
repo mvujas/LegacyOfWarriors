@@ -5,79 +5,67 @@ using GameServer.Net;
 using Utils.Net;
 using System.Net;
 using ProjectLevelConfig;
+using GameServer.GameServerLogic;
 using GameServer.GameServerLogic.ConcurrentScheduling;
 using System.Collections.Generic;
+using Utils.Interface;
+using System.Text;
 
 namespace GameServer
 {
+    class CustomEventHandlingContainer : IEventHandlingContainer
+    {
+        public GameServer.GameServerLogic.GameServer server;
+
+        public void OnMessageError(AsyncUserToken userToken)
+        {
+            Console.WriteLine("Greska u obradi!");
+        }
+
+        public void OnMessageReceived(MessageWrapper message)
+        {
+            Console.WriteLine("Message length: " + message.Message.Length);
+            Console.WriteLine("New message: " + Encoding.ASCII.GetString(message.Message));
+            server.Receive(message.UserToken);
+        }
+
+        public void OnUserConnect(AsyncUserToken userToken)
+        {
+            Console.WriteLine("New connection!");
+            server.Receive(userToken);
+        }
+
+        public void OnUserDisconnect(AsyncUserToken userToken)
+        {
+            Console.WriteLine("New disconnection!");
+        }
+    }
+
     public class Program
     {
         public static void Main(string[] args)
         {
-            /*Config.Prepare();
+            Config.Prepare();
 
             Initializer.Initialize();
 
-            var abc = new CustomEventHandlingContainer();
+            var handler = new CustomEventHandlingContainer();
 
-            SocketServer socketServer = new SocketServer(
-                100,
-                100,
-                abc
-            );
-
-            abc.server = socketServer;
-
-
-
-            IPEndPoint endPoint = NetUtils.CreateEndPoint(
-                SocketServerConfig.HOST,
-                SocketServerConfig.PORT
-            );
-
-            socketServer.Start(endPoint);*/
-
-            List<AsyncUserToken> tokens = new List<AsyncUserToken>();
-            for(int i = 0; i < 5; i++)
+            GameServerSpec gameServerSpec = new GameServerSpec
             {
-                tokens.Add(new AsyncUserToken());
-            }
+                endPoint = NetUtils.CreateEndPoint(SocketServerConfig.HOST, SocketServerConfig.PORT),
+                eventConsumingAgents = 2,
+                maxServerConnections = 50,
+                socketServerBackLog = 10,
+                socketServerBufferSize = 10,
+                eventHandler = handler
+            };
 
-            List<int> entries = new List<int>();
+            var gameServer = new GameServer.GameServerLogic.GameServer(gameServerSpec);
 
-            EventHandlingQueue queue = new EventHandlingQueue(2);
-            for(int i = 0; i < 1000000; i++)
-            {
-                int k = i;
-                queue.AddEvent(new EventQueueEntry
-                {
-                    runnable = () => {
-                        if(k % tokens.Count == 1)
-                        {
-                            entries.Add(k);
-                        }
-                    },
-                    userToken = tokens[i % 5]
-                });
-            }
+            handler.server = gameServer;
 
-
-            Console.WriteLine("Dodati");
-            Console.ReadKey();
-
-
-            Console.WriteLine("Provera:");
-            Console.WriteLine("Velicina: " + entries.Count);
-            int referent = int.MinValue;
-            foreach (var entry in entries)
-            {
-                if (entry < referent)
-                {
-                    Console.WriteLine("Greska!");
-                }
-            }
-
-            Console.WriteLine("Kraj!");
+            gameServer.Start();
 
             Console.ReadKey();
 

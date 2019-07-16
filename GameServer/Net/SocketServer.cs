@@ -87,6 +87,7 @@ namespace GameServer.Net
                 userToken.ReadEventArgs = m_readSocketPool.GetObject();
                 userToken.WriteEventArgs = m_writeSocketPool.GetObject();
                 userToken.OnMessageFullyReceived = m_eventHandlers.OnMessageReceived;
+                userToken.OnMessageError = m_eventHandlers.OnMessageError;
                 return userToken;
             };
             m_userTokens = new ObjectPool<AsyncUserToken>(userTokenSupplier, m_numConnections);

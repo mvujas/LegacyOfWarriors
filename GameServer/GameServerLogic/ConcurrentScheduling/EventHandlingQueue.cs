@@ -19,6 +19,8 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
         private List<EventHandlingAgent> m_agents;
         private ConcurrentDictionary<AsyncUserToken, object> m_locks;
 
+        private bool m_isRunning = false;
+
         private object m_structLock = new object();
 
         private object m_agentNotifier = new object();
@@ -36,6 +38,18 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
             {
                 var agent = new EventHandlingAgent(this, m_agentNotifier);
                 m_agents.Add(agent);
+            }
+        }
+
+        public void Start()
+        {
+            if(m_isRunning)
+            {
+                throw new InvalidOperationException("EventHandlingQueue is already running!");
+            }
+            m_isRunning = true;
+            foreach(var agent in m_agents)
+            {
                 agent.Start();
             }
         }
@@ -86,6 +100,7 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
 
         private void NotifyAgent()
         {
+            Console.WriteLine("Obavestavam, velicina niza: " + m_eventQueue.Count);
             lock (m_agentNotifier)
             {
                 Monitor.Pulse(m_agentNotifier);

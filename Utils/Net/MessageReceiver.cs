@@ -25,10 +25,13 @@ namespace Utils.Net
 
         public void Process(byte[] message)
         {
+            Console.WriteLine("Buffer size: " + message.Length);
+            Console.WriteLine("Primac trazi katanac. poruka duzine: " + BitConverter.ToInt32(message, 0));
             lock(m_receivingMessageLock)
             {
                 try
                 {
+                    Console.WriteLine("Nesto primam!");
                     ContinueReceive(message);
                 }
                 catch(Exception)
