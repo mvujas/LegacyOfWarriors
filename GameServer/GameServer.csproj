@@ -95,10 +95,18 @@
     <Compile Include="Logic\UserLogic.cs" />
     <Compile Include="Logic\Validation\UserValidator.cs" />
     <Compile Include="Model\User.cs" />
+    <Compile Include="Net\AsyncUserToken.cs" />
+    <Compile Include="Net\MessageTransformer.cs" />
+    <Compile Include="Net\MessageWrapper.cs" />
+    <Compile Include="Net\SocketServer.cs" />
+    <Compile Include="Utils\ArrayUtils.cs" />
+    <Compile Include="Utils\DataTypes\BufferManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\BaseRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Utils\DataTypes\ObjectPool.cs" />
+    <Compile Include="Utils\Delegates.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -121,5 +129,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
