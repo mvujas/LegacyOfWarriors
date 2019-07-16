@@ -8,6 +8,7 @@ using Utils.DataTypes;
 using Utils;
 using Utils.Delegates;
 using Utils.Net;
+using Utils.Interface;
 
 namespace GameServer.Net
 {
@@ -26,11 +27,10 @@ namespace GameServer.Net
 
         public bool IsRunning { get; private set; }
 
-        public EventHandlingContainer m_eventHandlers;
-
+        public IEventHandlingContainer m_eventHandlers;
 
         public SocketServer(int numConnections, int bufferSize, 
-            EventHandlingContainer eventHandlers, int backLog = 10)
+            IEventHandlingContainer eventHandlers, int backLog = 10)
         {
             if (numConnections < 1)
             {

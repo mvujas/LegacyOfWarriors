@@ -57,5 +57,27 @@ namespace Utils.Net
             m_messageReceiver.Process(message);
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is AsyncUserToken token &&
+                   EqualityComparer<Socket>.Default.Equals(Socket, token.Socket) &&
+                   EqualityComparer<SocketAsyncEventArgs>.Default.Equals(m_readEventArgs, token.m_readEventArgs) &&
+                   EqualityComparer<SocketAsyncEventArgs>.Default.Equals(m_writeEventArgs, token.m_writeEventArgs) &&
+                   EqualityComparer<MessageReceiver>.Default.Equals(m_messageReceiver, token.m_messageReceiver) &&
+                   EqualityComparer<SocketAsyncEventArgs>.Default.Equals(ReadEventArgs, token.ReadEventArgs) &&
+                   EqualityComparer<SocketAsyncEventArgs>.Default.Equals(WriteEventArgs, token.WriteEventArgs);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1998376283;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Socket>.Default.GetHashCode(Socket);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SocketAsyncEventArgs>.Default.GetHashCode(m_readEventArgs);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SocketAsyncEventArgs>.Default.GetHashCode(m_writeEventArgs);
+            hashCode = hashCode * -1521134295 + EqualityComparer<MessageReceiver>.Default.GetHashCode(m_messageReceiver);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SocketAsyncEventArgs>.Default.GetHashCode(ReadEventArgs);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SocketAsyncEventArgs>.Default.GetHashCode(WriteEventArgs);
+            return hashCode;
+        }
     }
 }

@@ -5,40 +5,16 @@ using GameServer.Net;
 using Utils.Net;
 using System.Net;
 using ProjectLevelConfig;
+using GameServer.GameServerLogic.ConcurrentScheduling;
+using System.Collections.Generic;
 
 namespace GameServer
 {
-    class CustomEventHandlingContainer : EventHandlingContainer
-    {
-        public SocketServer server;
-
-        public void OnMessageError(AsyncUserToken userToken)
-        {
-            
-        }
-
-        public void OnMessageReceived(MessageWrapper message)
-        {
-            
-        }
-
-        public void OnUserConnect(AsyncUserToken userToken)
-        {
-            Console.WriteLine("New connection!");
-            server.Send(userToken, "Zdravo svete!");
-        }
-
-        public void OnUserDisconnect(AsyncUserToken userToken)
-        {
-            Console.WriteLine("Connection over!");
-        }
-    }
-
     public class Program
     {
         public static void Main(string[] args)
         {
-            Config.Prepare();
+            /*Config.Prepare();
 
             Initializer.Initialize();
 
@@ -59,7 +35,51 @@ namespace GameServer
                 SocketServerConfig.PORT
             );
 
-            socketServer.Start(endPoint);
+            socketServer.Start(endPoint);*/
+
+            List<AsyncUserToken> tokens = new List<AsyncUserToken>();
+            for(int i = 0; i < 5; i++)
+            {
+                tokens.Add(new AsyncUserToken());
+            }
+
+            List<int> entries = new List<int>();
+
+            EventHandlingQueue queue = new EventHandlingQueue(2);
+            for(int i = 0; i < 1000000; i++)
+            {
+                int k = i;
+                queue.AddEvent(new EventQueueEntry
+                {
+                    runnable = () => {
+                        if(k % tokens.Count == 1)
+                        {
+                            entries.Add(k);
+                        }
+                    },
+                    userToken = tokens[i % 5]
+                });
+            }
+
+
+            Console.WriteLine("Dodati");
+            Console.ReadKey();
+
+
+            Console.WriteLine("Provera:");
+            Console.WriteLine("Velicina: " + entries.Count);
+            int referent = int.MinValue;
+            foreach (var entry in entries)
+            {
+                if (entry < referent)
+                {
+                    Console.WriteLine("Greska!");
+                }
+            }
+
+            Console.WriteLine("Kraj!");
+
+            Console.ReadKey();
 
 
         }

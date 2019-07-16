@@ -89,6 +89,8 @@
     <Compile Include="Config.cs" />
     <Compile Include="Database\ConnectionFactory.cs" />
     <Compile Include="Database\DBInitializer.cs" />
+    <Compile Include="GameServerLogic\ConcurrentScheduling\EventHandlingAgent.cs" />
+    <Compile Include="GameServerLogic\ConcurrentScheduling\EventHandlingQueue.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="Logic\Extensions.cs" />
     <Compile Include="Logic\Validation\InvalidDataException.cs" />
