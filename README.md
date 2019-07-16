@@ -1,1 +1,1 @@
-# LegacyOfWarriorsGameServer
+# LegacyOfWarriors
