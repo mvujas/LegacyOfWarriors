@@ -10,24 +10,27 @@ namespace GameServer
 {
     class CustomEventHandlingContainer : EventHandlingContainer
     {
+        public SocketServer server;
+
         public void OnMessageError(AsyncUserToken userToken)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnMessageReceived(MessageWrapper message)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnUserConnect(AsyncUserToken userToken)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("New connection!");
+            server.Send(userToken, "Zdravo svete!");
         }
 
         public void OnUserDisconnect(AsyncUserToken userToken)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Connection over!");
         }
     }
 
@@ -39,11 +42,17 @@ namespace GameServer
 
             Initializer.Initialize();
 
+            var abc = new CustomEventHandlingContainer();
+
             SocketServer socketServer = new SocketServer(
                 100,
                 100,
-                new CustomEventHandlingContainer()
+                abc
             );
+
+            abc.server = socketServer;
+
+
 
             IPEndPoint endPoint = NetUtils.CreateEndPoint(
                 SocketServerConfig.HOST,

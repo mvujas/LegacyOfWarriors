@@ -106,6 +106,7 @@ namespace GameServer.Net
 
             StartAccept();
 
+            Console.WriteLine("Socket server is running on {0}", localEndPoint.ToString());
             Console.WriteLine("Press any key to terminate the server process....");
             Console.ReadKey();
         }
@@ -142,7 +143,7 @@ namespace GameServer.Net
             AsyncUserToken userToken = m_userTokens.GetObject();
             userToken.Socket = e.AcceptSocket;
 
-            //OnConnect.BeginInvoke(this, userToken, null, null);
+            m_eventHandlers.OnUserConnect(userToken);
 
             StartAccept(e);
         }
@@ -230,18 +231,13 @@ namespace GameServer.Net
             token.Socket.Close();
             token.Socket = null;
 
-            /*OnDisconnect.BeginInvoke(this, token, result => {
-                Interlocked.Decrement(ref m_currentlyConnectedUsers);
+            m_eventHandlers.OnUserDisconnect(token);
 
-                m_userTokens.ReleaseObject(token);
-                m_readSocketPool.ReleaseObject(token.ReadEventArgs);
-                m_writeSocketPool.ReleaseObject(token.WriteEventArgs);
+            Interlocked.Decrement(ref m_currentlyConnectedUsers);
 
-                m_maxClientsAccepted.Release();
-            }, null);*/
+            m_userTokens.ReleaseObject(token);
+
+            m_maxClientsAccepted.Release();
         }
-
-
-
     }
 }

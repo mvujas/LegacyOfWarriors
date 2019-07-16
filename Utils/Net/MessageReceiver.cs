@@ -45,6 +45,7 @@ namespace Utils.Net
             {
                 int length = BitConverter.ToInt32(message, 0);
                 m_bytesToReceive = length;
+                m_messageBuffer = new byte[length];
                 start = 4;
                 bytesToGet = Math.Min(message.Length - 4, length);
             }
@@ -56,6 +57,7 @@ namespace Utils.Net
             int firstEmptyIndex = m_messageBuffer.Length - m_bytesToReceive;
             Array.Copy(message, start, m_messageBuffer, firstEmptyIndex, bytesToGet);
             m_bytesToReceive -= bytesToGet;
+            Console.WriteLine("Left to receive: " + m_bytesToReceive);
             if (m_bytesToReceive == 0)
             {
                 ProcessFullyReceivedMessage();

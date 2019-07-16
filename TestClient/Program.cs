@@ -12,6 +12,21 @@ namespace TestClient
 {
     class Program
     {
+        static void ProcessReceive(object sender, SocketAsyncEventArgs e)
+        {
+            byte[] buffer = e.Buffer;
+            Console.WriteLine("Primanje u toku: !");
+            Console.WriteLine(buffer.Length);
+            AsyncUserToken token = (AsyncUserToken)e.UserToken;
+
+            token.Process(e.Buffer);
+
+            if (!token.Socket.ReceiveAsync(token.ReadEventArgs))
+            {
+                ProcessReceive(null, token.ReadEventArgs);
+            }
+        }
+
         static void Main(string[] args)
         {
             IPEndPoint endPoint = NetUtils.CreateEndPoint(
@@ -21,8 +36,9 @@ namespace TestClient
 
             SocketAsyncEventArgs readArgs = new SocketAsyncEventArgs();
             SocketAsyncEventArgs writeArgs = new SocketAsyncEventArgs();
+            readArgs.Completed += ProcessReceive;
 
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[10];
             readArgs.SetBuffer(buffer, 0, buffer.Length);
 
             AsyncUserToken userToken = new AsyncUserToken
@@ -30,26 +46,32 @@ namespace TestClient
                 Socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp),
                 ReadEventArgs = readArgs,
                 WriteEventArgs = writeArgs,
-                OnMessageError = e => {
+                OnMessageError = e => 
+                {
 
                 },
                 OnMessageFullyReceived = e =>
                 {
-
+                    Console.WriteLine(Encoding.ASCII.GetString(e.Message));
                 }
             };
 
             try
             {
                 userToken.Socket.Connect(endPoint);
+
+                Console.WriteLine("Slusam!");
+                if(!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
+                {
+                    ProcessReceive(null, userToken.ReadEventArgs);
+                }
+
+                Console.ReadKey();
             }
             catch(Exception e)
             {
                 Console.WriteLine("Izuzetak: \n" + e);
             }
-            Console.WriteLine("Hej");
-
-            Console.ReadKey();
         }
     }
 }
