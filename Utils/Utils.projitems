@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3cc39564-b5e6-46fd-9e89-aea7b82c3dfe</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Utils</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataTypes\ObjectPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Delegates.cs" />
+  </ItemGroup>
+</Project>

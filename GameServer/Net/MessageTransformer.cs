@@ -1,9 +1,5 @@
-﻿using GameServer.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Utils;
 
 namespace GameServer.Net
 {
@@ -12,7 +8,7 @@ namespace GameServer.Net
         public static byte[] PrepareMessageForSending(byte[] message)
         {
             byte[] lengthArray = BitConverter.GetBytes(message.Length);
-            byte[] result = ArrayUtils.MergeArrays<byte>(lengthArray, message);
+            byte[] result = ArrayUtils.MergeArrays(lengthArray, message);
             return result;
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameServer.Utils
+namespace Utils
 {
     public static class ArrayUtils
     {

@@ -1,15 +1,12 @@
-﻿using GameServer.Utils;
-using GameServer.Utils.DataTypes;
-using GameServer.Utils.Delegates;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Utils.DataTypes;
+using Utils;
+using Utils.Delegates;
 
 namespace GameServer.Net
 {
@@ -22,20 +19,17 @@ namespace GameServer.Net
         private ObjectPool<SocketAsyncEventArgs> m_readSocketPool;
         private ObjectPool<SocketAsyncEventArgs> m_writeSocketPool;
         private ObjectPool<AsyncUserToken> m_userTokens;
-        private BufferManager m_bufferManager;
+        private AsyncSocketArgsBufferManager m_bufferManager;
         private Semaphore m_maxClientsAccepted;
         private int m_backLog;
 
         public bool IsRunning { get; private set; }
 
-        #region EVENTS
-        public event EventHandler<AsyncUserToken> OnConnect;
-        public event EventHandler<AsyncUserToken> OnDisconnect;
-        public event EventHandler<MessageWrapper> OnMessageReceived;
-        #endregion
+        public EventHandlingContainer m_eventHandlers;
 
 
-        public SocketServer(int numConnections, int bufferSize, int backLog = 10)
+        public SocketServer(int numConnections, int bufferSize, 
+            EventHandlingContainer eventHandlers, int backLog = 10)
         {
             if (numConnections < 1)
             {
@@ -49,13 +43,15 @@ namespace GameServer.Net
             {
                 throw new ArgumentException("BackLog must be positive number");
             }
+            m_eventHandlers = eventHandlers ?? 
+                throw new ArgumentNullException(nameof(eventHandlers));
 
             IsRunning = false;
             m_currentlyConnectedUsers = 0;
             m_numConnections = numConnections;
             m_bufferSize = bufferSize;
             m_backLog = backLog;
-            m_bufferManager = new BufferManager(m_bufferSize * m_numConnections, m_bufferSize);
+            m_bufferManager = new AsyncSocketArgsBufferManager(m_bufferSize * m_numConnections, m_bufferSize);
 
             m_maxClientsAccepted = new Semaphore(m_numConnections, m_numConnections);
             Init();
@@ -89,26 +85,10 @@ namespace GameServer.Net
                 AsyncUserToken userToken = new AsyncUserToken();
                 userToken.ReadEventArgs = m_readSocketPool.GetObject();
                 userToken.WriteEventArgs = m_writeSocketPool.GetObject();
-                userToken.Server = this;
+                userToken.OnMessageFullyReceived += m_eventHandlers.OnMessageReceived;
                 return userToken;
             };
             m_userTokens = new ObjectPool<AsyncUserToken>(userTokenSupplier, m_numConnections);
-        }
-
-        private void CheckEvents()
-        {
-            if (OnConnect == null)
-            {
-                throw new ArgumentNullException(nameof(OnConnect));
-            }
-            if (OnDisconnect == null)
-            {
-                throw new ArgumentNullException(nameof(OnDisconnect));
-            }
-            if (OnMessageReceived == null)
-            {
-                throw new ArgumentNullException(nameof(OnMessageReceived));
-            }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -118,7 +98,6 @@ namespace GameServer.Net
             {
                 throw new InvalidOperationException("Server is already running");
             }
-            CheckEvents();
             IsRunning = true;
             m_listener = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             m_listener.Bind(localEndPoint);
@@ -194,7 +173,6 @@ namespace GameServer.Net
 
         private void ProcessReceive(SocketAsyncEventArgs e)
         {
-            // check if the remote host closed the connection
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {

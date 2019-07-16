@@ -1,8 +1,8 @@
-﻿using GameServer.Utils.Delegates;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
+using Utils.Delegates;
 
-namespace GameServer.Utils.DataTypes
+namespace Utils.DataTypes
 {
     public class ObjectPool<T>
     {

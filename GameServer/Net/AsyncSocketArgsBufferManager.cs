@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Text;
 
-namespace GameServer.Utils.DataTypes
+namespace GameServer.Net
 {
-    public class BufferManager
+    internal class AsyncSocketArgsBufferManager
     {
         int m_numBytes;                 // the total number of bytes controlled by the buffer pool
         byte[] m_buffer;                // the underlying byte array maintained by the Buffer Manager
@@ -11,7 +13,7 @@ namespace GameServer.Utils.DataTypes
         int m_currentIndex;
         int m_bufferSize;
 
-        public BufferManager(int totalBytes, int bufferSize)
+        public AsyncSocketArgsBufferManager(int totalBytes, int bufferSize)
         {
             m_numBytes = totalBytes;
             m_currentIndex = 0;
