@@ -26,13 +26,12 @@ namespace GameServer
         {
             Console.WriteLine("Message length: " + message.Message.Length);
             Console.WriteLine("New message: " + Encoding.ASCII.GetString(message.Message));
-            server.Receive(message.UserToken);
+            //server.Send(message.UserToken, "Poruka primljena!");
         }
 
         public void OnUserConnect(AsyncUserToken userToken)
         {
             Console.WriteLine("New connection!");
-            server.Receive(userToken);
         }
 
         public void OnUserDisconnect(AsyncUserToken userToken)

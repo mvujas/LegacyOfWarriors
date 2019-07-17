@@ -12,6 +12,7 @@ namespace Utils.Net
 
         private int currentId;
 
+
         public Socket Socket { get; set; }
         private SocketAsyncEventArgs m_readEventArgs;
         private SocketAsyncEventArgs m_writeEventArgs;
@@ -58,9 +59,9 @@ namespace Utils.Net
         }
         #endregion
 
-        public void Process(byte[] message)
+        public void Process(byte[] message, int messageBytes)
         {
-            m_messageReceiver.Process(message);
+            m_messageReceiver.Process(message, messageBytes);
         }
 
         public override bool Equals(object obj)

@@ -149,6 +149,8 @@ namespace GameServer.Net
 
             m_eventHandlers.OnUserConnect(userToken);
 
+            Receive(userToken);
+
             StartAccept(e);
         }
 
@@ -185,7 +187,9 @@ namespace GameServer.Net
                 int length = BitConverter.ToInt32(e.Buffer, 0);
 
                 Console.WriteLine("Stiglo: " + e.BytesTransferred + " bajtova, broj = " + length);
-                token.Process(e.Buffer);
+                token.Process(e.Buffer, e.BytesTransferred);
+
+                Receive(token);
             }
             else
             {

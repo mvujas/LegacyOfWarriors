@@ -25,16 +25,21 @@ namespace TestClient
 
         static void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
-            byte[] buffer = e.Buffer;
-            Console.WriteLine("Primanje u toku: !");
-            Console.WriteLine(buffer.Length);
-            AsyncUserToken token = (AsyncUserToken)e.UserToken;
-
-            token.Process(e.Buffer);
-
-            if (!token.Socket.ReceiveAsync(token.ReadEventArgs))
+            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                ProcessReceive(null, token.ReadEventArgs);
+                byte[] buffer = e.Buffer;
+                AsyncUserToken token = (AsyncUserToken)e.UserToken;
+
+                token.Process(buffer, e.BytesTransferred);
+
+                if (!token.Socket.ReceiveAsync(token.ReadEventArgs))
+                {
+                    ProcessReceive(null, token.ReadEventArgs);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Greska!");
             }
         }
 
@@ -44,9 +49,8 @@ namespace TestClient
         {
             if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                if(count < 10000)
+                if(count < 100000)
                 {
-                    Thread.Sleep(25);
                     SendNext((AsyncUserToken)e.UserToken);
                 }
             }
@@ -101,7 +105,7 @@ namespace TestClient
                 },
                 OnMessageFullyReceived = e =>
                 {
-                    Console.WriteLine(Encoding.ASCII.GetString(e.Message));
+                    Console.WriteLine("Stigla poruka: " + Encoding.ASCII.GetString(e.Message));
                 }
             };
 
@@ -113,6 +117,11 @@ namespace TestClient
 
                 SendNext(userToken);
 
+                if (!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
+                {
+                    ProcessReceive(null, userToken.ReadEventArgs);
+                }
+
                 Console.ReadKey();
             }
             catch(Exception e)
@@ -120,6 +129,13 @@ namespace TestClient
                 Console.WriteLine("Izuzetak: \n" + e);
             }
 
+            try
+            {
+                userToken.Socket.Shutdown(SocketShutdown.Both);
+            }
+            catch (Exception) { }
+
+            userToken.Socket.Close();
             Console.ReadKey();
         }
     }

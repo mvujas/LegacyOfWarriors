@@ -21,9 +21,25 @@ namespace Utils.Net
         private int m_bytesToReceive = 0;
         private byte[] m_messageBuffer = null;
 
+        const int PREFIX_SIZE = 4;
+
+        private int m_bytesLeftForPrefix = PREFIX_SIZE;
+        private byte[] m_lengthPrefixArr = new byte[PREFIX_SIZE];
+
+
         private object m_receivingMessageLock = new object();
 
-        public void Process(byte[] message)
+        static string bytesToStr(byte[] bajtovi)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var bajt in bajtovi)
+            {
+                stringBuilder.Append(bajt);
+            }
+            return stringBuilder.ToString();
+        }
+
+        public void Process(byte[] message, int messageBytes)
         {
             Console.WriteLine("Buffer size: " + message.Length);
             Console.WriteLine("Primac trazi katanac. poruka duzine: " + BitConverter.ToInt32(message, 0));
@@ -31,8 +47,8 @@ namespace Utils.Net
             {
                 try
                 {
-                    Console.WriteLine("Nesto primam!");
-                    ContinueReceive(message);
+                    Console.WriteLine("Bajtovi: " + bytesToStr(message));
+                    ContinueReceive(message, 0, messageBytes);
                 }
                 catch(Exception)
                 {
@@ -41,21 +57,34 @@ namespace Utils.Net
             }
         }
 
-        private void ContinueReceive(byte[] message)
+        private void ContinueReceive(byte[] message, int offset, int length)
         {
             int start, bytesToGet;
             if(m_messageBuffer == null)
             {
-                int length = BitConverter.ToInt32(message, 0);
-                m_bytesToReceive = length;
-                m_messageBuffer = new byte[length];
-                start = 4;
-                bytesToGet = Math.Min(message.Length - 4, length);
+                int prefixArrStartIndex = PREFIX_SIZE - m_bytesLeftForPrefix;
+                int readBytes = Math.Min(length, m_bytesLeftForPrefix);
+                Array.Copy(message, offset, m_lengthPrefixArr, prefixArrStartIndex, readBytes);
+                m_bytesLeftForPrefix -= readBytes;
+
+                if(m_bytesLeftForPrefix > 0)
+                {
+                    return;
+                }
+
+                int length_prefix = BitConverter.ToInt32(m_lengthPrefixArr, 0);
+
+                Console.WriteLine($" === NOVA PORUKA DUZINE: {length_prefix} ===");
+
+                m_bytesToReceive = length_prefix;
+                m_messageBuffer = new byte[length_prefix];
+                start = offset + readBytes;
+                bytesToGet = Math.Min(length - readBytes, length_prefix);
             }
             else
             {
-                start = 0;
-                bytesToGet = Math.Min(message.Length, m_bytesToReceive);
+                start = offset;
+                bytesToGet = Math.Min(length, m_bytesToReceive);
             }
             int firstEmptyIndex = m_messageBuffer.Length - m_bytesToReceive;
             Array.Copy(message, start, m_messageBuffer, firstEmptyIndex, bytesToGet);
@@ -65,12 +94,19 @@ namespace Utils.Net
             {
                 ProcessFullyReceivedMessage();
             }
+
+            int bytesLeftInMessage = offset + length - (start + bytesToGet);
+            if(bytesLeftInMessage > 0)
+            {
+                ContinueReceive(message, start + bytesToGet, bytesLeftInMessage);
+            }
         }
 
         private void Reset()
         {
             m_bytesToReceive = 0;
             m_messageBuffer = null;
+            m_bytesLeftForPrefix = PREFIX_SIZE;
         }
 
         private void ResetAndReturnError()
