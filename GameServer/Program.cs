@@ -50,11 +50,12 @@ namespace GameServer
             Initializer.Initialize();
 
             var handler = new CustomEventHandlingContainer();
+            IPEndPoint endPoint = NetUtils.CreateEndPoint(SocketServerConfig.HOST, SocketServerConfig.PORT);
 
             GameServerSpec gameServerSpec = new GameServerSpec
             {
-                endPoint = NetUtils.CreateEndPoint(SocketServerConfig.HOST, SocketServerConfig.PORT),
-                eventConsumingAgents = 2,
+                endPoint = endPoint,
+                eventConsumingAgents = 10,
                 maxServerConnections = 50,
                 socketServerBackLog = 10,
                 socketServerBufferSize = 10,
@@ -66,6 +67,12 @@ namespace GameServer
             handler.server = gameServer;
 
             gameServer.Start();
+
+            /*SocketServer socketServer = new SocketServer(10, 128, handler);
+
+            handler.server = socketServer;
+
+            socketServer.Start(endPoint);*/
 
             Console.ReadKey();
 

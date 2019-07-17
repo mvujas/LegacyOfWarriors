@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Utils.Net;
 
@@ -12,6 +13,16 @@ namespace TestClient
 {
     class Program
     {
+        static string bytesToStr(byte[] bajtovi)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach(var bajt in bajtovi)
+            {
+                stringBuilder.Append(bajt);
+            }
+            return stringBuilder.ToString();
+        }
+
         static void ProcessReceive(object sender, SocketAsyncEventArgs e)
         {
             byte[] buffer = e.Buffer;
@@ -33,8 +44,9 @@ namespace TestClient
         {
             if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                if(count < 100)
+                if(count < 10000)
                 {
+                    Thread.Sleep(25);
                     SendNext((AsyncUserToken)e.UserToken);
                 }
             }
@@ -54,6 +66,9 @@ namespace TestClient
                         Encoding.ASCII.GetBytes("Neka poruka numero: " + i));
 
             Console.WriteLine("Duzina: " + message.Length);
+
+            Console.WriteLine("Poruka u bajtovima: " + bytesToStr(message));
+
             userToken.WriteEventArgs.SetBuffer(message, 0, message.Length);
             if (!userToken.Socket.SendAsync(userToken.WriteEventArgs))
             {

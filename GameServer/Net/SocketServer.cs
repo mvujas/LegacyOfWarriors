@@ -9,6 +9,7 @@ using Utils;
 using Utils.Delegates;
 using Utils.Net;
 using Utils.Interface;
+using System.ServiceModel.Channels;
 
 namespace GameServer.Net
 {
@@ -21,9 +22,9 @@ namespace GameServer.Net
         private ObjectPool<SocketAsyncEventArgs> m_readSocketPool;
         private ObjectPool<SocketAsyncEventArgs> m_writeSocketPool;
         private ObjectPool<AsyncUserToken> m_userTokens;
-        private AsyncSocketArgsBufferManager m_bufferManager;
         private Semaphore m_maxClientsAccepted;
         private int m_backLog;
+        private BufferManager m_bufferManager;
 
         public bool IsRunning { get; private set; }
 
@@ -52,7 +53,6 @@ namespace GameServer.Net
             m_numConnections = numConnections;
             m_bufferSize = bufferSize;
             m_backLog = backLog;
-            m_bufferManager = new AsyncSocketArgsBufferManager(m_bufferSize * m_numConnections, m_bufferSize);
 
             m_maxClientsAccepted = new Semaphore(m_numConnections, m_numConnections);
             Init();
@@ -60,7 +60,8 @@ namespace GameServer.Net
 
         private void Init()
         {
-            m_bufferManager.InitBuffer();
+            m_bufferManager = 
+                BufferManager.CreateBufferManager(m_bufferSize * m_numConnections, m_bufferSize);
 
             Supplier<SocketAsyncEventArgs> writeSocketSupplier = () =>
             {
@@ -72,8 +73,10 @@ namespace GameServer.Net
 
             Supplier<SocketAsyncEventArgs> readSocketSupplier = () => {
                 SocketAsyncEventArgs socketEventArgs = writeSocketSupplier();
+                byte[] buffer = m_bufferManager.TakeBuffer(m_bufferSize);
 
-                m_bufferManager.SetBuffer(socketEventArgs);
+                socketEventArgs.SetBuffer(buffer, 0, buffer.Length);
+
                 return socketEventArgs;
             };
             m_readSocketPool = new ObjectPool<SocketAsyncEventArgs>(readSocketSupplier,
@@ -179,6 +182,9 @@ namespace GameServer.Net
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
+                int length = BitConverter.ToInt32(e.Buffer, 0);
+
+                Console.WriteLine("Stiglo: " + e.BytesTransferred + " bajtova, broj = " + length);
                 token.Process(e.Buffer);
             }
             else

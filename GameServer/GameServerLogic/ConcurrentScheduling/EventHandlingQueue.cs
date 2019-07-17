@@ -100,7 +100,6 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
 
         private void NotifyAgent()
         {
-            Console.WriteLine("Obavestavam, velicina niza: " + m_eventQueue.Count);
             lock (m_agentNotifier)
             {
                 Monitor.Pulse(m_agentNotifier);

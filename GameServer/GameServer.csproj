@@ -77,6 +77,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Channels" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -100,7 +102,6 @@
     <Compile Include="Logic\UserLogic.cs" />
     <Compile Include="Logic\Validation\UserValidator.cs" />
     <Compile Include="Model\User.cs" />
-    <Compile Include="Net\AsyncSocketArgsBufferManager.cs" />
     <Compile Include="Net\SocketServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

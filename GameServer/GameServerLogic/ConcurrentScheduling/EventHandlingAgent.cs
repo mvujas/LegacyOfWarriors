@@ -44,7 +44,6 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
             EventQueueEntry entry = m_queue.GetEntryToProcess();
             if(entry != null)
             {
-                Console.WriteLine("Uzeo lock!");
                 try
                 {
                     entry.runnable();
@@ -52,7 +51,6 @@ namespace GameServer.GameServerLogic.ConcurrentScheduling
                 finally
                 {
                     m_queue.RemoveEntryAndReleaseLock(entry);
-                    Console.WriteLine("Pustam lock!");
                 }
             }
         }
