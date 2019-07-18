@@ -26,13 +26,15 @@ namespace GameServer
 
         public void OnMessageReceived(MessageWrapper message)
         {
-            /*Console.WriteLine("Message length: " + message.Message.Length);
-            Console.WriteLine("New message: " + Encoding.ASCII.GetString(message.Message));*/
-            //server.Send(message.UserToken, "Poruka primljena!");
+            //Console.WriteLine("Message length: " + message.Message.Length);
+            string poruka = Encoding.ASCII.GetString(message.Message);
+            Console.WriteLine("New message: " + poruka);
+            string broj = poruka.Substring(20);
+            server.Send(message.UserToken, $"Poruka broj {broj:3} primljena!");
 
-            Objekat obj = SeriabilityUtils.ByteArrayToObject<Objekat>(message.Message);
+            //Objekat obj = SeriabilityUtils.ByteArrayToObject<Objekat>(message.Message);
 
-            Console.WriteLine("Pristigli objekat: " + obj);
+            //Console.WriteLine("Pristigli objekat: " + obj);
         }
 
         public void OnUserConnect(AsyncUserToken userToken)

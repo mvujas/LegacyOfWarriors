@@ -44,50 +44,11 @@ namespace TestClient
                 Console.WriteLine("Greska!");
             }
         }
-
-        static int count = 0;
-
         static void ProcessSend(object sender, SocketAsyncEventArgs e)
         {
-            if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
-            {
-                /*if(count < 100000)
-                {
-                    SendNext((AsyncUserToken)e.UserToken);
-                }*/
-            }
-            else
+            if(!(e.BytesTransferred > 0 && e.SocketError == SocketError.Success))
             {
                 Console.WriteLine("Greska!");
-            }
-        }
-
-        static void SendNext(AsyncUserToken userToken)
-        {
-            int i = count++;
-
-            Console.WriteLine("Saljem poruku broj: " + i);
-
-            /*byte[] message = MessageTransformer.PrepareMessageForSending(
-                        Encoding.ASCII.GetBytes("Neka poruka numero: " + i));*/
-
-            byte[] objArr = SeriabilityUtils.ObjectToByteArray(new Objekat1
-            {
-                ime = "Pera",
-                godiste = 1900,
-                ocene = 5
-            });
-
-            byte[] message = MessageTransformer.PrepareMessageForSending(objArr);
-
-            Console.WriteLine("Duzina: " + message.Length);
-
-            Console.WriteLine("Poruka u bajtovima: " + bytesToStr(message));
-
-            userToken.WriteEventArgs.SetBuffer(message, 0, message.Length);
-            if (!userToken.Socket.SendAsync(userToken.WriteEventArgs))
-            {
-                ProcessSend(null, userToken.WriteEventArgs);
             }
         }
 
@@ -105,11 +66,9 @@ namespace TestClient
             byte[] buffer = new byte[10];
             readArgs.SetBuffer(buffer, 0, buffer.Length);
 
-            AsyncUserToken userToken = new AsyncUserToken
+            AsyncUserToken userToken = new AsyncUserToken(readArgs, writeArgs)
             {
                 Socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp),
-                ReadEventArgs = readArgs,
-                WriteEventArgs = writeArgs,
                 OnMessageError = e => 
                 {
 
@@ -126,7 +85,11 @@ namespace TestClient
             {
                 userToken.Socket.Connect(endPoint);
 
-                SendNext(userToken);
+                for (int i = 0; i < 100; i++)
+                {
+                    byte[] message = Encoding.ASCII.GetBytes("Neka poruka numero: " + i);
+                    userToken.Send(message);
+                }
 
                 if (!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
                 {

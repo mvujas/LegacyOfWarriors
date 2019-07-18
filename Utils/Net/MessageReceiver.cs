@@ -41,13 +41,10 @@ namespace Utils.Net
 
         public void Process(byte[] message, int messageBytes)
         {
-            Console.WriteLine("Buffer size: " + message.Length);
-            Console.WriteLine("Primac trazi katanac. poruka duzine: " + BitConverter.ToInt32(message, 0));
             lock(m_receivingMessageLock)
             {
                 try
                 {
-                    Console.WriteLine("Bajtovi: " + bytesToStr(message));
                     ContinueReceive(message, 0, messageBytes);
                 }
                 catch(Exception)
@@ -74,8 +71,6 @@ namespace Utils.Net
 
                 int length_prefix = BitConverter.ToInt32(m_lengthPrefixArr, 0);
 
-                Console.WriteLine($" === NOVA PORUKA DUZINE: {length_prefix} ===");
-
                 m_bytesToReceive = length_prefix;
                 m_messageBuffer = new byte[length_prefix];
                 start = offset + readBytes;
@@ -89,7 +84,6 @@ namespace Utils.Net
             int firstEmptyIndex = m_messageBuffer.Length - m_bytesToReceive;
             Array.Copy(message, start, m_messageBuffer, firstEmptyIndex, bytesToGet);
             m_bytesToReceive -= bytesToGet;
-            Console.WriteLine("Left to receive: " + m_bytesToReceive);
             if (m_bytesToReceive == 0)
             {
                 ProcessFullyReceivedMessage();

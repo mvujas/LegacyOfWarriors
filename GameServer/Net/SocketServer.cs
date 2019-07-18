@@ -86,9 +86,8 @@ namespace GameServer.Net
 
             Supplier<AsyncUserToken> userTokenSupplier = () =>
             {
-                AsyncUserToken userToken = new AsyncUserToken();
-                userToken.ReadEventArgs = m_readSocketPool.GetObject();
-                userToken.WriteEventArgs = m_writeSocketPool.GetObject();
+                AsyncUserToken userToken = 
+                    new AsyncUserToken(m_readSocketPool.GetObject(), m_writeSocketPool.GetObject());
                 userToken.OnMessageFullyReceived = m_eventHandlers.OnMessageReceived;
                 userToken.OnMessageError = m_eventHandlers.OnMessageError;
                 return userToken;
@@ -184,11 +183,7 @@ namespace GameServer.Net
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                int length = BitConverter.ToInt32(e.Buffer, 0);
-
-                Console.WriteLine("Stiglo: " + e.BytesTransferred + " bajtova, broj = " + length);
                 token.Process(e.Buffer, e.BytesTransferred);
-
                 Receive(token);
             }
             else
@@ -204,17 +199,7 @@ namespace GameServer.Net
 
         public void Send(AsyncUserToken token, byte[] message)
         {
-            SocketAsyncEventArgs writeEventArgs = token.WriteEventArgs;
-
-            byte[] dataToSend = MessageTransformer.PrepareMessageForSending(message);
-
-            writeEventArgs.SetBuffer(dataToSend, 0, dataToSend.Length);
-
-            bool asyncExecution = token.Socket.SendAsync(writeEventArgs);
-            if (!asyncExecution)
-            {
-                ProcessSend(writeEventArgs);
-            }
+            token.Send(message);
         }
 
         private void ProcessSend(SocketAsyncEventArgs e)
