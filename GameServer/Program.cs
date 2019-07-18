@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Utils.Interface;
 using System.Text;
 using Utils;
+using Remote;
 
 namespace GameServer
 {

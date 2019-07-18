@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Utils
+namespace Remote
 {
+    [Serializable]
     public class Objekat1: Objekat
     {
         public int ocene = 5;
