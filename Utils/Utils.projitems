@@ -18,6 +18,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Net\MessageTransformer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Net\MessageWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Net\NetUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objekat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Objekat1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SeriabilityUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Interface\" />

@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils;
 using Utils.Net;
 
 namespace TestClient
@@ -49,10 +50,10 @@ namespace TestClient
         {
             if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                if(count < 100000)
+                /*if(count < 100000)
                 {
                     SendNext((AsyncUserToken)e.UserToken);
-                }
+                }*/
             }
             else
             {
@@ -66,8 +67,17 @@ namespace TestClient
 
             Console.WriteLine("Saljem poruku broj: " + i);
 
-            byte[] message = MessageTransformer.PrepareMessageForSending(
-                        Encoding.ASCII.GetBytes("Neka poruka numero: " + i));
+            /*byte[] message = MessageTransformer.PrepareMessageForSending(
+                        Encoding.ASCII.GetBytes("Neka poruka numero: " + i));*/
+
+            byte[] objArr = SeriabilityUtils.ObjectToByteArray(new Objekat1
+            {
+                ime = "Pera",
+                godiste = 1900,
+                ocene = 5
+            });
+
+            byte[] message = MessageTransformer.PrepareMessageForSending(objArr);
 
             Console.WriteLine("Duzina: " + message.Length);
 

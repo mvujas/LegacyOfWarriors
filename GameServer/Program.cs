@@ -10,6 +10,7 @@ using GameServer.GameServerLogic.ConcurrentScheduling;
 using System.Collections.Generic;
 using Utils.Interface;
 using System.Text;
+using Utils;
 
 namespace GameServer
 {
@@ -24,9 +25,13 @@ namespace GameServer
 
         public void OnMessageReceived(MessageWrapper message)
         {
-            Console.WriteLine("Message length: " + message.Message.Length);
-            Console.WriteLine("New message: " + Encoding.ASCII.GetString(message.Message));
+            /*Console.WriteLine("Message length: " + message.Message.Length);
+            Console.WriteLine("New message: " + Encoding.ASCII.GetString(message.Message));*/
             //server.Send(message.UserToken, "Poruka primljena!");
+
+            Objekat obj = SeriabilityUtils.ByteArrayToObject<Objekat>(message.Message);
+
+            Console.WriteLine("Pristigli objekat: " + obj);
         }
 
         public void OnUserConnect(AsyncUserToken userToken)
