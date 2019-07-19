@@ -19,12 +19,9 @@ namespace GameServer.Net
         private int m_currentlyConnectedUsers;
         private int m_bufferSize;
         private Socket m_listener;
-        private ObjectPool<SocketAsyncEventArgs> m_readSocketPool;
-        private ObjectPool<SocketAsyncEventArgs> m_writeSocketPool;
         private ObjectPool<AsyncUserToken> m_userTokens;
         private Semaphore m_maxClientsAccepted;
         private int m_backLog;
-        private BufferManager m_bufferManager;
 
         public bool IsRunning { get; private set; }
 
@@ -60,9 +57,6 @@ namespace GameServer.Net
 
         private void Init()
         {
-            m_bufferManager = 
-                BufferManager.CreateBufferManager(m_bufferSize * m_numConnections, m_bufferSize);
-
             Supplier<SocketAsyncEventArgs> writeSocketSupplier = () =>
             {
                 SocketAsyncEventArgs socketEventArgs = new SocketAsyncEventArgs();
@@ -73,21 +67,19 @@ namespace GameServer.Net
 
             Supplier<SocketAsyncEventArgs> readSocketSupplier = () => {
                 SocketAsyncEventArgs socketEventArgs = writeSocketSupplier();
-                byte[] buffer = m_bufferManager.TakeBuffer(m_bufferSize);
+                byte[] buffer = new byte[m_bufferSize];
 
                 socketEventArgs.SetBuffer(buffer, 0, buffer.Length);
 
+                Console.WriteLine("buffer size: " + buffer.Length);
+
                 return socketEventArgs;
             };
-            m_readSocketPool = new ObjectPool<SocketAsyncEventArgs>(readSocketSupplier,
-                m_numConnections);
-            m_writeSocketPool = new ObjectPool<SocketAsyncEventArgs>(writeSocketSupplier,
-                m_numConnections);
 
             Supplier<AsyncUserToken> userTokenSupplier = () =>
             {
                 AsyncUserToken userToken = 
-                    new AsyncUserToken(m_readSocketPool.GetObject(), m_writeSocketPool.GetObject());
+                    new AsyncUserToken(readSocketSupplier(), writeSocketSupplier());
                 userToken.OnMessageFullyReceived = m_eventHandlers.OnMessageReceived;
                 userToken.OnMessageError = m_eventHandlers.OnMessageError;
                 return userToken;

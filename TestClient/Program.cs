@@ -85,7 +85,7 @@ namespace TestClient
             {
                 userToken.Socket.Connect(endPoint);
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 100000; i++)
                 {
                     byte[] message = Encoding.ASCII.GetBytes("Neka poruka numero: " + i);
                     userToken.Send(message);
