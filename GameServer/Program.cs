@@ -64,7 +64,7 @@ namespace GameServer
             Initializer.Initialize();
 
             var handler = new CustomEventHandlingContainer();
-            IPEndPoint endPoint = NetUtils.CreateEndPoint(SocketServerConfig.HOST, SocketServerConfig.PORT);
+            IPEndPoint endPoint = NetUtils.CreateEndPoint(EndPointConfig.HOST, EndPointConfig.PORT);
 
             GameServerSpec gameServerSpec = new GameServerSpec
             {

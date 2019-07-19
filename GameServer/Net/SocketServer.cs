@@ -71,8 +71,6 @@ namespace GameServer.Net
 
                 socketEventArgs.SetBuffer(buffer, 0, buffer.Length);
 
-                Console.WriteLine("buffer size: " + buffer.Length);
-
                 return socketEventArgs;
             };
 

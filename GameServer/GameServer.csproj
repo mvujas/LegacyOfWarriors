@@ -133,6 +133,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ProjectLevelConfig\ProjectLevelConfig.csproj">
+      <Project>{195fc9e0-6731-401b-bf08-8033aebc743b}</Project>
+      <Name>ProjectLevelConfig</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Remote\Remote.csproj">
       <Project>{464c7ebc-140d-4ac2-b7be-36e0d76c805f}</Project>
       <Name>Remote</Name>
@@ -142,6 +146,5 @@
       <Name>Utils</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\Config\Config.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

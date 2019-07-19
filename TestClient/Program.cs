@@ -1,5 +1,4 @@
 ﻿using ProjectLevelConfig;
-using Remote;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,8 +54,8 @@ namespace TestClient
         static void Main(string[] args)
         {
             IPEndPoint endPoint = NetUtils.CreateEndPoint(
-                SocketServerConfig.HOST,
-                SocketServerConfig.PORT
+                EndPointConfig.HOST,
+                EndPointConfig.PORT
             );
 
             SocketAsyncEventArgs readArgs = new SocketAsyncEventArgs();
