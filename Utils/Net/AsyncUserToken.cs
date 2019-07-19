@@ -122,7 +122,6 @@ namespace Utils.Net
         {
             if (IsSocketActiveAndResetSendingQueue())
             {
-                message = MessageTransformer.PrepareMessageForSending(message);
                 WriteEventArgs.SetBuffer(message, 0, message.Length);
                 Socket.SendAsync(WriteEventArgs);
             }

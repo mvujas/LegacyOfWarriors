@@ -15,8 +15,6 @@ namespace GameServer.GameServerLogic
         public int maxServerConnections;
         public int socketServerBufferSize;
         public int socketServerBackLog;
-        public IEventHandlingContainer eventHandler;
-
         public int eventConsumingAgents;
     }
 }

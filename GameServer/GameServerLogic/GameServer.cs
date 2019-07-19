@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GameServer.GameServerLogic.EventHandling;
 using Utils.Net;
+using Remote.Interface;
 
 namespace GameServer.GameServerLogic
 {
@@ -15,11 +16,16 @@ namespace GameServer.GameServerLogic
         private SocketServer m_socketServer;
         private ConcurrentSchedulingEventHandlingContainer m_concurrentSchedulingEventHandlingContainer;
 
-        public GameServer(GameServerSpec spec)
+        public GameServer(GameServerSpec spec, LogicRouter router = null)
         {
+            if(router == null)
+            {
+                router = new CardGameLogicRouter();
+            }
+            router.Server = this;
             m_spec = spec;
             m_concurrentSchedulingEventHandlingContainer = 
-                new ConcurrentSchedulingEventHandlingContainer(spec.eventHandler, spec.eventConsumingAgents);
+                new ConcurrentSchedulingEventHandlingContainer(router, spec.eventConsumingAgents);
             m_socketServer = new SocketServer(
                 spec.maxServerConnections,
                 spec.socketServerBufferSize,
@@ -31,6 +37,16 @@ namespace GameServer.GameServerLogic
         {
             m_concurrentSchedulingEventHandlingContainer.StartQueue();
             m_socketServer.Start(m_spec.endPoint);
+
+            Console.WriteLine("Press any key to terminate game server process...");
+            Console.ReadKey();
+            Environment.Exit(1);
+        }
+
+        public void Send(AsyncUserToken token, IRemoteObject remoteObject)
+        {
+            byte[] message = Utils.SeriabilityUtils.ObjectToByteArray(remoteObject);
+            m_socketServer.Send(token, message);
         }
 
         public void Send(AsyncUserToken token, byte[] message)

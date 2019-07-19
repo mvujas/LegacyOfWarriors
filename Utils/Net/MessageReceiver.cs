@@ -29,16 +29,6 @@ namespace Utils.Net
 
         private object m_receivingMessageLock = new object();
 
-        static string bytesToStr(byte[] bajtovi)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (var bajt in bajtovi)
-            {
-                stringBuilder.Append(bajt);
-            }
-            return stringBuilder.ToString();
-        }
-
         public void Process(byte[] message, int messageBytes)
         {
             lock(m_receivingMessageLock)
@@ -113,7 +103,7 @@ namespace Utils.Net
         {
             MessageWrapper messageWrapper = new MessageWrapper
             {
-                Message = m_messageBuffer, 
+                Message = m_messageBuffer,
                 UserToken = m_userToken
             };
             Reset();

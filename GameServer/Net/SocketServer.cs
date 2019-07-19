@@ -100,8 +100,6 @@ namespace GameServer.Net
             StartAccept();
 
             Console.WriteLine("Socket server is running on {0}", localEndPoint.ToString());
-            Console.WriteLine("Press any key to terminate the server process....");
-            Console.ReadKey();
         }
 
         private void StartAccept(SocketAsyncEventArgs acceptEventArg = null)
@@ -187,8 +185,12 @@ namespace GameServer.Net
             Send(token, Encoding.ASCII.GetBytes(message));
         }
 
-        public void Send(AsyncUserToken token, byte[] message)
+        public void Send(AsyncUserToken token, byte[] message, bool sendPlain = false)
         {
+            if (!sendPlain)
+            {
+                message = MessageTransformer.PrepareMessageForSending(message);
+            }
             token.Send(message);
         }
 

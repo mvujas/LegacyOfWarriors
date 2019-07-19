@@ -1,4 +1,6 @@
 ﻿using ProjectLevelConfig;
+using Remote;
+using Remote.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +76,12 @@ namespace TestClient
                 },
                 OnMessageFullyReceived = e =>
                 {
-                    Console.WriteLine("Stigla poruka: " + Encoding.ASCII.GetString(e.Message));
+                    IRemoteObject obj = Utils.SeriabilityUtils.ByteArrayToObject<IRemoteObject>(e.Message);
+                    //Console.WriteLine("Stigla poruka: " + Encoding.ASCII.GetString(e.Message));
+                    if(obj.GetType() == typeof(Remote.Implementation.RequestProcessingError))
+                    {
+                        Console.WriteLine("Greska u procesiranju");
+                    }
                 }
             };
 
@@ -84,11 +91,8 @@ namespace TestClient
             {
                 userToken.Socket.Connect(endPoint);
 
-                for (int i = 0; i < 100000; i++)
-                {
-                    byte[] message = Encoding.ASCII.GetBytes("Neka poruka numero: " + i);
-                    userToken.Send(message);
-                }
+                byte[] message = MessageTransformer.PrepareMessageForSending(Encoding.ASCII.GetBytes("Neki tekst"));
+                userToken.Send(message);
 
                 if (!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
                 {
