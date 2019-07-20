@@ -93,6 +93,11 @@ namespace TestClient
                         LoginResponse response = obj as LoginResponse;
                         Console.WriteLine($"Odgovor na zahtev za logovanje: {response.Successfulness}, \nPoruka: {response.Message}");
                     }
+                    else if (tip == typeof(Remote.Implementation.RegistrationResponse))
+                    {
+                        RegistrationResponse response = obj as RegistrationResponse;
+                        Console.WriteLine($"Odgovor na zahtev za registraciju: {response.Successfulness}, \nPoruka: {response.Message}");
+                    }
                 }
             };
 
@@ -102,16 +107,24 @@ namespace TestClient
             {
                 userToken.Socket.Connect(endPoint);
 
-                IRemoteObject remoteObject = new LoginRequest
+                IRemoteObject loginRequest = new LoginRequest
                 {
-                    Username = "mvujas",
-                    Password = "pera12345"
+                    Username = "marica",
+                    Password = "maraBre123"
                 };
 
-                byte[] message = MessageTransformer.PrepareMessageForSending(
-                    Utils.SeriabilityUtils.ObjectToByteArray(remoteObject));
-                userToken.Send(message);
-                userToken.Send(message);
+                IRemoteObject registrationRequest = new RegistrationRequest
+                {
+                    Username = "marica",
+                    Password = "maraBre123"
+                };
+
+                byte[] loginMessage = MessageTransformer.PrepareMessageForSending(
+                    Utils.SeriabilityUtils.ObjectToByteArray(loginRequest));
+                byte[] registrationMessage = MessageTransformer.PrepareMessageForSending(
+                    Utils.SeriabilityUtils.ObjectToByteArray(registrationRequest));
+                userToken.Send(registrationMessage);
+                userToken.Send(loginMessage);
 
                 if (!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
                 {

@@ -13,7 +13,8 @@ namespace GameServer.GameServerLogic.RequestHandling
     public class CardGameRequestMapper : RemoteRequestMapper
     {
         private Dictionary<Type, RequestHandler> m_mapping = new Dictionary<Type, RequestHandler> {
-            [typeof(LoginRequest)] = new LoginHandler()
+            [typeof(LoginRequest)] = new LoginHandler(),
+            [typeof(RegistrationRequest)] = new RegistrationHandler()
         };
 
         private IRemoteObject m_invalidTypeHandlerResponse = new InvalidRequest();

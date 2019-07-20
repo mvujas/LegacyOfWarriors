@@ -102,6 +102,7 @@
     <Compile Include="GameServerLogic\CardGameLogicRouter.cs" />
     <Compile Include="GameServerLogic\RequestHandling\CardGameRequestMapper.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />
+    <Compile Include="GameServerLogic\RequestHandling\Handlers\RegistrationHandler.cs" />
     <Compile Include="GameServerLogic\ServerSideTokenIdentity.cs" />
     <Compile Include="GameServerLogic\ServerSideLogicRouter.cs" />
     <Compile Include="GameServerLogic\Lists\UserConnectionList.cs" />
