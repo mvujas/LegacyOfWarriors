@@ -7,22 +7,23 @@ using System.Threading.Tasks;
 using GameServer.GameServerLogic.EventHandling;
 using Utils.Net;
 using Remote.Interface;
+using Utils.Interface;
 
 namespace GameServer.GameServerLogic
 {
-    public class GameServer
+    public class GameServer : IRemoteSender
     {
         private GameServerSpec m_spec;
         private SocketServer m_socketServer;
         private ConcurrentSchedulingEventHandlingContainer m_concurrentSchedulingEventHandlingContainer;
 
-        public GameServer(GameServerSpec spec, LogicRouter router = null)
+        public GameServer(GameServerSpec spec, ServerSideLogicRouter router = null)
         {
             if(router == null)
             {
                 router = new CardGameLogicRouter();
             }
-            router.Server = this;
+            router.Sender = this;
             m_spec = spec;
             m_concurrentSchedulingEventHandlingContainer = 
                 new ConcurrentSchedulingEventHandlingContainer(router, spec.eventConsumingAgents);

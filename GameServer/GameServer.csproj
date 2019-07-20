@@ -100,7 +100,9 @@
     <Compile Include="GameServerLogic\GameServer.cs" />
     <Compile Include="GameServerLogic\GameServerSpec.cs" />
     <Compile Include="GameServerLogic\CardGameLogicRouter.cs" />
-    <Compile Include="GameServerLogic\LogicRouter.cs" />
+    <Compile Include="GameServerLogic\RequestHandling\CardGameRequestMapper.cs" />
+    <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />
+    <Compile Include="GameServerLogic\ServerSideLogicRouter.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="Logic\Extensions.cs" />
     <Compile Include="Logic\Validation\InvalidDataException.cs" />

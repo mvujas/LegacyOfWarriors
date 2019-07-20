@@ -5,11 +5,9 @@ using Utils.Net;
 
 namespace Utils.Interface
 {
-    public interface IEventHandlingContainer
+    public interface IEventHandlingContainer : IMessageHandlingContainer
     {
         void OnUserConnect(AsyncUserToken userToken);
         void OnUserDisconnect(AsyncUserToken userToken);
-        void OnMessageReceived(MessageWrapper message);
-        void OnMessageError(AsyncUserToken userToken);
     }
 }

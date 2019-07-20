@@ -1,5 +1,6 @@
 ﻿using ProjectLevelConfig;
 using Remote;
+using Remote.Implementation;
 using Remote.Interface;
 using System;
 using System.Collections.Generic;
@@ -78,9 +79,13 @@ namespace TestClient
                 {
                     IRemoteObject obj = Utils.SeriabilityUtils.ByteArrayToObject<IRemoteObject>(e.Message);
                     //Console.WriteLine("Stigla poruka: " + Encoding.ASCII.GetString(e.Message));
-                    if(obj.GetType() == typeof(Remote.Implementation.RequestProcessingError))
+                    Type tip = obj.GetType();
+                    if (tip == typeof(Remote.Implementation.RequestProcessingError))
                     {
                         Console.WriteLine("Greska u procesiranju");
+                    } else if(tip == typeof(Remote.Implementation.LoginRequest))
+                    {
+                        Console.WriteLine("Zahtev za prijavljivanje");
                     }
                 }
             };
@@ -91,7 +96,14 @@ namespace TestClient
             {
                 userToken.Socket.Connect(endPoint);
 
-                byte[] message = MessageTransformer.PrepareMessageForSending(Encoding.ASCII.GetBytes("Neki tekst"));
+                IRemoteObject remoteObject = new LoginRequest
+                {
+                    Username = "pera",
+                    Password = "peric"
+                };
+
+                byte[] message = MessageTransformer.PrepareMessageForSending(
+                    Utils.SeriabilityUtils.ObjectToByteArray(remoteObject));
                 userToken.Send(message);
 
                 if (!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))

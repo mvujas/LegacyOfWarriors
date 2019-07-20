@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utils.Interface;
 using Utils.Net;
 using Remote.Implementation;
 using Remote.Interface;
-using Utils.Logic;
 
-namespace GameServer.GameServerLogic
+namespace Utils.Remote
 {
-    public abstract class LogicRouter : IEventHandlingContainer
+    public abstract class LogicRouter : IMessageHandlingContainer
     {
-        public GameServer Server { get; set; }
+        public IRemoteSender Sender { get; set; }
 
         protected abstract RemoteRequestMapper GetRequestMapper();
 
         public void OnMessageError(AsyncUserToken userToken)
         {
-            Server.Send(userToken, new RequestProcessingError());
+            Sender.Send(userToken, new RequestProcessingError());
         }
 
         public void OnMessageReceived(MessageWrapper messageWrapper)
@@ -37,16 +32,12 @@ namespace GameServer.GameServerLogic
         private void HandleRequest(MessageWrapper messageWrapper)
         {
             IRemoteObject request =
-                    Utils.SeriabilityUtils.ByteArrayToObject<IRemoteObject>(messageWrapper.Message);
-            IRemoteObject response = GetRequestMapper().Handle(request);
+                    SeriabilityUtils.ByteArrayToObject<IRemoteObject>(messageWrapper.Message);
+            IRemoteObject response = GetRequestMapper().Handle(messageWrapper.UserToken, request);
             if (response != null)
             {
-                Server.Send(messageWrapper.UserToken, response);
+                Sender.Send(messageWrapper.UserToken, response);
             }
         }
-
-        public abstract void OnUserConnect(AsyncUserToken userToken);
-
-        public abstract void OnUserDisconnect(AsyncUserToken userToken);
     }
 }

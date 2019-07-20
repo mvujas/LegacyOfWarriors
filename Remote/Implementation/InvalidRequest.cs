@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utils.Logic
+namespace Remote.Implementation
 {
-    public interface RequestHandler
+    [Serializable]
+    public class InvalidRequest : IRemoteObject
     {
-        IRemoteObject Handle(IRemoteObject request);
     }
 }

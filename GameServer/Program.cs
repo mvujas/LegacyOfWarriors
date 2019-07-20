@@ -37,9 +37,7 @@ namespace GameServer
                 socketServerBufferSize = 50
             };
 
-            var gameServer = new GameServer.GameServerLogic.GameServer(gameServerSpec);
-
-            handler.Server = gameServer;
+            var gameServer = new GameServer.GameServerLogic.GameServer(gameServerSpec, handler);
 
             gameServer.Start();
         }

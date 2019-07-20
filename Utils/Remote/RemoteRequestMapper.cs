@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Remote.Interface;
+using Utils.Net;
 
-namespace Utils.Logic
+namespace Utils.Remote
 {
     public abstract class RemoteRequestMapper
     {
         protected abstract IRemoteObject InvalidTypeRepsonse();
         protected abstract Dictionary<Type, RequestHandler> GetMapperDictionary();
 
-        public IRemoteObject Handle(IRemoteObject remoteObject)
+        public IRemoteObject Handle(AsyncUserToken token, IRemoteObject remoteObject)
         {
             Dictionary<Type, RequestHandler> handleMapper = GetMapperDictionary();
             if(handleMapper == null)
@@ -22,7 +23,7 @@ namespace Utils.Logic
             RequestHandler handler;
             if(handleMapper.TryGetValue(remoteObject.GetType(), out handler))
             {
-                return handler.Handle(remoteObject);
+                return handler.Handle(token, remoteObject);
             }
             return InvalidTypeRepsonse();
         }

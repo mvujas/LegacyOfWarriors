@@ -46,8 +46,11 @@
     <Compile Include="DataTypes\ObjectPool.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Interface\IEventHandlingContainer.cs" />
-    <Compile Include="Logic\RemoteRequestMapper.cs" />
-    <Compile Include="Logic\RequestHandler.cs" />
+    <Compile Include="Interface\IMessageHandlingContainer.cs" />
+    <Compile Include="Interface\IRemoteSender.cs" />
+    <Compile Include="Remote\LogicRouter.cs" />
+    <Compile Include="Remote\RemoteRequestMapper.cs" />
+    <Compile Include="Remote\RequestHandler.cs" />
     <Compile Include="Net\AsyncUserToken.cs" />
     <Compile Include="Net\MessageReceiver.cs" />
     <Compile Include="Net\MessageTransformer.cs" />
