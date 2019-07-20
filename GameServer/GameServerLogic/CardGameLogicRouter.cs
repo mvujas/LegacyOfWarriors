@@ -1,4 +1,5 @@
-﻿using GameServer.GameServerLogic.RequestHandling;
+﻿using GameServer.GameServerLogic.Lists;
+using GameServer.GameServerLogic.RequestHandling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,21 @@ namespace GameServer.GameServerLogic
 
         public override void OnUserConnect(AsyncUserToken userToken)
         {
+            ServerSideTokenIdentity identity = (ServerSideTokenIdentity)userToken.info;
+            if (userToken.info == null)
+            {
+                identity = new ServerSideTokenIdentity();
+                userToken.info = identity;
+            }
+            identity.Token = userToken;
             Console.WriteLine("User connected");
         }
 
         public override void OnUserDisconnect(AsyncUserToken userToken)
         {
+            var identity = (ServerSideTokenIdentity)userToken.info;
+            UserConnectionList.GetInstance().LogOutUserUnderIdentity(identity);
+            identity.Reset();
             Console.WriteLine("User disconnected");
         }
 

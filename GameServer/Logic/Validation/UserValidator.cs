@@ -21,11 +21,11 @@ namespace GameServer.Logic.Validation
         {
             if(!usernamePattern.IsMatch(username))
             {
-                throw new InvalidDataException("Nevalidno korisnicko ime!");
+                throw new InvalidLogicDataException("Nevalidno korisnicko ime!");
             }
             if(userRepository.DoesUserExist(username))
             {
-                throw new InvalidDataException(
+                throw new InvalidLogicDataException(
                     "Vec postoji korisnik sa datim korisnickim imenom");
             }
         }
@@ -34,7 +34,7 @@ namespace GameServer.Logic.Validation
         {
             if(password.Length < MINIMUM_PASSWORD_LENGTH)
             {
-                throw new InvalidDataException(
+                throw new InvalidLogicDataException(
                     "Lozinka mora biti duzine barem " + MINIMUM_PASSWORD_LENGTH);
             }
             bool digit = false, 
@@ -44,7 +44,7 @@ namespace GameServer.Logic.Validation
             {
                 if(c == ' ')
                 {
-                    throw new InvalidDataException("Lozinka ne sme imati razmake");
+                    throw new InvalidLogicDataException("Lozinka ne sme imati razmake");
                 }
                 digit |= (c >= '0' && c <= '9');
                 bigLetter |= (c >= 'A' && c <= 'Z');
@@ -52,7 +52,7 @@ namespace GameServer.Logic.Validation
             }
             if((digit ? 1 : 0) + (bigLetter ? 1 : 0) + (smallLetter ? 1 : 0) < 2)
             {
-                throw new InvalidDataException(
+                throw new InvalidLogicDataException(
                     "Lozinka mora imati bar dva od ponudjenog: malo slovo, veliko slovo, cifra");
             }
         }

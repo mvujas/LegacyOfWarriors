@@ -16,9 +16,11 @@ namespace Utils.Net
         private Queue<byte[]> m_messageSendingQueue = new Queue<byte[]>();
 
         public Socket Socket { get; set; }
+        public object info { get; set; }
         private SocketAsyncEventArgs m_readEventArgs;
         private SocketAsyncEventArgs m_writeEventArgs;
         private MessageReceiver m_messageReceiver;
+        
 
         public AsyncUserToken(SocketAsyncEventArgs readEventArgs, SocketAsyncEventArgs writeEventArgs)
         {

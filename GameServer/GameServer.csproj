@@ -102,10 +102,12 @@
     <Compile Include="GameServerLogic\CardGameLogicRouter.cs" />
     <Compile Include="GameServerLogic\RequestHandling\CardGameRequestMapper.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />
+    <Compile Include="GameServerLogic\ServerSideTokenIdentity.cs" />
     <Compile Include="GameServerLogic\ServerSideLogicRouter.cs" />
+    <Compile Include="GameServerLogic\Lists\UserConnectionList.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="Logic\Extensions.cs" />
-    <Compile Include="Logic\Validation\InvalidDataException.cs" />
+    <Compile Include="Logic\Validation\InvalidLogicDataException.cs" />
     <Compile Include="Logic\UserLogic.cs" />
     <Compile Include="Logic\Validation\UserValidator.cs" />
     <Compile Include="Model\User.cs" />

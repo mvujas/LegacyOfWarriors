@@ -15,7 +15,7 @@ namespace GameServer.Logic
     {
         private static UserRepository userRepo = new UserRepository();
 
-        /// <exception cref="GameServer.Logic.Validation.UserValidator">
+        /// <exception cref="GameServer.Logic.Validation.InvalidLogicDataException">
         /// Baca se ako su podaci nevalidni
         /// </exception>
         public static void RegisterUser(string username, string password)
@@ -35,13 +35,13 @@ namespace GameServer.Logic
             {
                 if (e.IsDuplicateEntry())
                 {
-                    throw new InvalidDataException(
+                    throw new InvalidLogicDataException(
                         "Vec postoji korisnik sa datim korisnickim imenom");
                 }
             }
         }
 
-        /// <exception cref="GameServer.Logic.Validation.UserValidator">
+        /// <exception cref="GameServer.Logic.Validation.InvalidLogicDataException">
         /// Baca se ako podaci za prijavljivanje nisu tacni
         /// </exception>
         public static User GetUserByLoginInfo(string username, string password)
@@ -49,12 +49,12 @@ namespace GameServer.Logic
             var user = userRepo.GetByUsername(username);
             if(user == null)
             {
-                throw new InvalidDataException(
+                throw new InvalidLogicDataException(
                     "Ne postoji korisnik pod datim korisnickim imenom");
             }
             if(!BCryptHelper.CheckPassword(password, user.PasswordHash))
             {
-                throw new InvalidDataException("Pogresna lozinka");
+                throw new InvalidLogicDataException("Pogresna lozinka");
             }
             return user;
         }

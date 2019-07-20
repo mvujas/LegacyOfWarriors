@@ -83,9 +83,15 @@ namespace TestClient
                     if (tip == typeof(Remote.Implementation.RequestProcessingError))
                     {
                         Console.WriteLine("Greska u procesiranju");
-                    } else if(tip == typeof(Remote.Implementation.LoginRequest))
+                    }
+                    else if(tip == typeof(Remote.Implementation.LoginRequest))
                     {
                         Console.WriteLine("Zahtev za prijavljivanje");
+                    }
+                    else if (tip == typeof(Remote.Implementation.LoginResponse))
+                    {
+                        LoginResponse response = obj as LoginResponse;
+                        Console.WriteLine($"Odgovor na zahtev za logovanje: {response.Successfulness}, \nPoruka: {response.Message}");
                     }
                 }
             };
@@ -98,12 +104,13 @@ namespace TestClient
 
                 IRemoteObject remoteObject = new LoginRequest
                 {
-                    Username = "pera",
-                    Password = "peric"
+                    Username = "mvujas",
+                    Password = "pera12345"
                 };
 
                 byte[] message = MessageTransformer.PrepareMessageForSending(
                     Utils.SeriabilityUtils.ObjectToByteArray(remoteObject));
+                userToken.Send(message);
                 userToken.Send(message);
 
                 if (!userToken.Socket.ReceiveAsync(userToken.ReadEventArgs))
