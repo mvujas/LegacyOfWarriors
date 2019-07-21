@@ -49,6 +49,7 @@
     <Compile Include="Interface\IMessageHandlingContainer.cs" />
     <Compile Include="Interface\IRemoteSender.cs" />
     <Compile Include="Remote\LogicRouter.cs" />
+    <Compile Include="Remote\MutableLogicRouter.cs" />
     <Compile Include="Remote\RemoteRequestMapper.cs" />
     <Compile Include="Remote\RequestHandler.cs" />
     <Compile Include="Net\AsyncUserToken.cs" />

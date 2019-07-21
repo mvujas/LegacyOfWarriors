@@ -8,24 +8,26 @@ using Utils.Interface;
 using Utils.Net;
 using System.Net;
 using System.Net.Sockets;
+using Utils.Remote;
 
 namespace ClientUtils
 {
     public class SocketClient
     {
         private AsyncUserToken m_userToken;
-        private IConnectionEventHandler m_connectionHandler;
+        private IMessageHandlingContainer m_eventHandlingContainer;
 
-        public SocketClient(IConnectionEventHandler connectionHandler, 
+        public SocketClient(IMessageHandlingContainer eventHandlingContainer, 
             int receiveBufferSize = 10)
         {
-            if(receiveBufferSize < 1)
+            if (receiveBufferSize < 1)
             {
                 throw new ArgumentOutOfRangeException("Buffer size must be positive number");
             }
+      
 
-            m_connectionHandler = connectionHandler ?? 
-                throw new ArgumentNullException(nameof(connectionHandler));
+            m_eventHandlingContainer = eventHandlingContainer 
+                ?? throw new ArgumentNullException(nameof(eventHandlingContainer));
 
             InitUserToken(receiveBufferSize);
         }
@@ -35,10 +37,76 @@ namespace ClientUtils
             var readEventArgs = new SocketAsyncEventArgs();
             var writeEventArgs = new SocketAsyncEventArgs();
 
+            readEventArgs.Completed += IO_Completed;
+            writeEventArgs.Completed += IO_Completed;
+
             byte[] buffer = new byte[bufferSize];
             readEventArgs.SetBuffer(buffer, 0, buffer.Length);
 
             m_userToken = new AsyncUserToken(readEventArgs, writeEventArgs);
+            m_userToken.OnMessageError = m_eventHandlingContainer.OnMessageError;
+            m_userToken.OnMessageFullyReceived = m_eventHandlingContainer.OnMessageReceived;
+        }
+
+        public void Send(byte[] message, bool sendPlain = false)
+        {
+            if (!IsActive())
+            {
+                throw new InvalidOperationException("Socket client must run to send messge");
+            }
+
+            if (!sendPlain)
+            {
+                message = MessageTransformer.PrepareMessageForSending(message);
+            }
+            m_userToken.Send(message);
+        }
+
+        public void Receive()
+        {
+            bool asyncExecution = m_userToken.Socket.ReceiveAsync(m_userToken.ReadEventArgs);
+            if (!asyncExecution)
+            {
+                ProcessSend(m_userToken.ReadEventArgs);
+            }
+        }
+
+        private void IO_Completed(object sender, SocketAsyncEventArgs e)
+        {
+            switch (e.LastOperation)
+            {
+                case SocketAsyncOperation.Receive:
+                    ProcessReceive(e);
+                    break;
+                case SocketAsyncOperation.Send:
+                    ProcessSend(e);
+                    break;
+                default:
+                    throw new ArgumentException(
+                        "The last operation completed on the socket was not a receive or send");
+            }
+        }
+
+        private void ProcessSend(SocketAsyncEventArgs e)
+        {
+            if (e.SocketError != SocketError.Success)
+            {
+                Disconnect();
+            }
+        }
+
+        private void ProcessReceive(SocketAsyncEventArgs e)
+        {
+            AsyncUserToken token = (AsyncUserToken)e.UserToken;
+            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+            {
+                token.Process(e.Buffer, e.BytesTransferred);
+                Receive();
+            }
+            else
+            {
+                Disconnect();
+            }
         }
 
         private bool IsActive()
@@ -46,6 +114,9 @@ namespace ClientUtils
             return m_userToken.Socket != null;
         }
 
+        /// <summary>
+        /// Throws exception is something is wrong
+        /// </summary>
         public void Connect(IPEndPoint endPoint)
         {
             if (IsActive())
@@ -54,15 +125,8 @@ namespace ClientUtils
             }
 
             m_userToken.Socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            try
-            {
-                m_userToken.Socket.Connect(endPoint);
-                m_connectionHandler.OnSuccessfulConnection();
-            }
-            catch(Exception)
-            {
-                m_connectionHandler.OnFailedConnection();
-            }
+            m_userToken.Socket.Connect(endPoint);
+            Receive();
         }
 
         public void Disconnect()
@@ -75,16 +139,6 @@ namespace ClientUtils
             m_userToken.Socket.Close();
 
             m_userToken.Socket = null;
-
-            m_connectionHandler.OnDisconnect();
-        }
-
-        public void Send(byte[] message)
-        {
-            if(!IsActive())
-            {
-                throw new InvalidOperationException("Socket client must run to send messge");
-            }
         }
     }
 }

@@ -82,6 +82,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ClientUtils\ClientUtils.csproj">
+      <Project>{a9e93214-91d8-438e-a984-e0bb7e46da4f}</Project>
+      <Name>ClientUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProjectLevelConfig\ProjectLevelConfig.csproj">
       <Project>{195fc9e0-6731-401b-bf08-8033aebc743b}</Project>
       <Name>ProjectLevelConfig</Name>

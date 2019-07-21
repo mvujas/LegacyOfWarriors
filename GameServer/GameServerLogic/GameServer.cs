@@ -49,21 +49,5 @@ namespace GameServer.GameServerLogic
             byte[] message = Utils.SeriabilityUtils.ObjectToByteArray(remoteObject);
             m_socketServer.Send(token, message);
         }
-
-        public void Send(AsyncUserToken token, byte[] message)
-        {
-            m_socketServer.Send(token, message);
-        }
-
-        public void Send(AsyncUserToken token, string message)
-        {
-            m_socketServer.Send(token, message);
-        }
-
-        public void Receive(AsyncUserToken token)
-        {
-            m_socketServer.Receive(token);
-        }
-
     }
 }

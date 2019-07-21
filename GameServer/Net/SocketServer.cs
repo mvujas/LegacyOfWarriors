@@ -180,11 +180,6 @@ namespace GameServer.Net
             }
         }
 
-        public void Send(AsyncUserToken token, string message)
-        {
-            Send(token, Encoding.ASCII.GetBytes(message));
-        }
-
         public void Send(AsyncUserToken token, byte[] message, bool sendPlain = false)
         {
             if (!sendPlain)
