@@ -43,6 +43,11 @@ namespace ClientUtils
             }
         }
 
+        public bool IsActive()
+        {
+            return m_socketClient.IsActive();
+        }
+
         /// <param name="userToken">redundant parameter, a product of poor architecture</param>
         public void Send(AsyncUserToken _, IRemoteObject remoteObject)
         {

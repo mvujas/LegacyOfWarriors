@@ -109,7 +109,7 @@ namespace ClientUtils
             }
         }
 
-        private bool IsActive()
+        public bool IsActive()
         {
             return m_userToken.Socket != null;
         }
@@ -124,9 +124,17 @@ namespace ClientUtils
                 throw new InvalidOperationException("Socket client is already active");
             }
 
-            m_userToken.Socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            m_userToken.Socket.Connect(endPoint);
-            Receive();
+            try
+            {
+                m_userToken.Socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                m_userToken.Socket.Connect(endPoint);
+                Receive();
+            }
+            catch(Exception)
+            {
+                m_userToken.Socket = null;
+                throw;
+            }
         }
 
         public void Disconnect()
