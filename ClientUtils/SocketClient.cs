@@ -9,6 +9,7 @@ using Utils.Net;
 using System.Net;
 using System.Net.Sockets;
 using Utils.Remote;
+using Utils.Delegates;
 
 namespace ClientUtils
 {
@@ -16,6 +17,8 @@ namespace ClientUtils
     {
         private AsyncUserToken m_userToken;
         private IMessageHandlingContainer m_eventHandlingContainer;
+
+        public Runnable OnDisconnect { get; set; }
 
         public SocketClient(IMessageHandlingContainer eventHandlingContainer, 
             int receiveBufferSize = 10)
@@ -139,6 +142,11 @@ namespace ClientUtils
 
         public void Disconnect()
         {
+            if (!IsActive())
+            {
+                return;
+            }
+
             try
             {
                 m_userToken.Socket.Shutdown(SocketShutdown.Both);
@@ -147,6 +155,8 @@ namespace ClientUtils
             m_userToken.Socket.Close();
 
             m_userToken.Socket = null;
+
+            OnDisconnect?.Invoke();
         }
     }
 }

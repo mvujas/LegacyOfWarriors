@@ -17,6 +17,8 @@ namespace ClientUtils
         private MutableLogicRouter m_logicRouter;
         private GameClientSpec m_spec;
 
+        public Runnable OnDisconnect { set => m_socketClient.OnDisconnect = value; }
+
         public GameClient(GameClientSpec spec, RemoteRequestMapper remoteRequestMapper = null)
         {
             m_spec = spec;
@@ -58,6 +60,11 @@ namespace ClientUtils
         {
             byte[] message = Utils.SeriabilityUtils.ObjectToByteArray(remoteObject);
             m_socketClient.Send(message);
+        }
+
+        public void Disconnect()
+        {
+            m_socketClient.Disconnect();
         }
     }
 }

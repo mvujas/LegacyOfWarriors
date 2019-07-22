@@ -66,6 +66,8 @@ namespace TestClient
 
             GameClient gameClient = new GameClient(spec, new DefaultRemoteRequestMapper());
 
+            gameClient.OnDisconnect = () => Console.WriteLine("I'm disconnecting :/");
+
             gameClient.Start(
                 () => Console.WriteLine("Uspesno povezan"),
                 () => Console.WriteLine("Nije uspesno povezan")
@@ -76,6 +78,11 @@ namespace TestClient
                 Username="mvujas",
                 Password="pera1234"
             });
+
+            Console.WriteLine("Press any key to terminate game client...");
+            Console.ReadKey();
+
+            gameClient.Disconnect();
 
             Console.ReadKey();
         }
