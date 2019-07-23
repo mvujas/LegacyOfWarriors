@@ -42,12 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\CardListRequest.cs" />
+    <Compile Include="Implementation\CardListResponse.cs" />
     <Compile Include="Implementation\InvalidRequest.cs" />
     <Compile Include="Implementation\RegistrationRequest.cs" />
     <Compile Include="Implementation\LoginRequest.cs" />
     <Compile Include="Implementation\RegistrationResponse.cs" />
     <Compile Include="Implementation\LoginResponse.cs" />
     <Compile Include="Implementation\RequestProcessingError.cs" />
+    <Compile Include="InGameObjects\Card.cs" />
+    <Compile Include="InGameObjects\CardList.cs" />
     <Compile Include="Interface\IRemoteObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

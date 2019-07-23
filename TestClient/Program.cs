@@ -2,6 +2,7 @@
 using ProjectLevelConfig;
 using Remote;
 using Remote.Implementation;
+using Remote.InGameObjects;
 using Remote.Interface;
 using System;
 using System.Collections.Generic;
@@ -31,11 +32,31 @@ namespace TestClient
         }
     }
 
+    class CardResponseHandler : RequestHandler
+    {
+        public IRemoteObject Handle(AsyncUserToken token, IRemoteObject request)
+        {
+            CardListResponse cardListResponse = request as CardListResponse;
+            if (cardListResponse.UpToDate)
+            {
+                Console.WriteLine("Imam najnoviju verziju!");
+            }
+            else
+            {
+                CardList cardList = cardListResponse.CardList;
+                Console.WriteLine("Stigla nova lista karata, verzija: " + cardList.Vesion);
+            }
+
+            return null;
+        }
+    }
+
     class DefaultRemoteRequestMapper : RemoteRequestMapper
     {
         private Dictionary<Type, RequestHandler> m_mapper = new Dictionary<Type, RequestHandler>
         {
-            [typeof(LoginResponse)] = new LoginResponseHandler()
+            [typeof(LoginResponse)] = new LoginResponseHandler(),
+            [typeof(CardListResponse)] = new CardResponseHandler()
         };
 
         protected override Dictionary<Type, RequestHandler> GetMapperDictionary()
@@ -73,11 +94,7 @@ namespace TestClient
                 () => Console.WriteLine("Nije uspesno povezan")
             );
 
-            gameClient.Send(new LoginRequest
-            {
-                Username="mvujas",
-                Password="pera1234"
-            });
+            gameClient.Send(new CardListRequest());
 
             Console.WriteLine("Press any key to terminate game client...");
             Console.ReadKey();

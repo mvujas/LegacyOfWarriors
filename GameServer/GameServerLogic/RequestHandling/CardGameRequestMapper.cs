@@ -14,7 +14,8 @@ namespace GameServer.GameServerLogic.RequestHandling
     {
         private Dictionary<Type, RequestHandler> m_mapping = new Dictionary<Type, RequestHandler> {
             [typeof(LoginRequest)] = new LoginHandler(),
-            [typeof(RegistrationRequest)] = new RegistrationHandler()
+            [typeof(RegistrationRequest)] = new RegistrationHandler(),
+            [typeof(CardListRequest)] = new CardListRequestHandler()
         };
 
         private IRemoteObject m_invalidTypeHandlerResponse = new InvalidRequest();

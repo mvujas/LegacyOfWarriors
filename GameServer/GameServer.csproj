@@ -94,6 +94,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="Database\ConnectionFactory.cs" />
     <Compile Include="Database\DBInitializer.cs" />
+    <Compile Include="GameServerLogic\CardListManager.cs" />
     <Compile Include="GameServerLogic\EventHandling\ConcurrentSchedulingEventHandlingContainer.cs" />
     <Compile Include="GameServerLogic\ConcurrentScheduling\EventHandlingAgent.cs" />
     <Compile Include="GameServerLogic\ConcurrentScheduling\EventHandlingQueue.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="GameServerLogic\GameServerSpec.cs" />
     <Compile Include="GameServerLogic\CardGameLogicRouter.cs" />
     <Compile Include="GameServerLogic\RequestHandling\CardGameRequestMapper.cs" />
+    <Compile Include="GameServerLogic\RequestHandling\Handlers\CardListRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\RegistrationHandler.cs" />
     <Compile Include="GameServerLogic\ServerSideTokenIdentity.cs" />
