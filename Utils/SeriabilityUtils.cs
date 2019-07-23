@@ -10,23 +10,49 @@ namespace Utils
     {
         public static byte[] ObjectToByteArray(Object obj)
         {
-            BinaryFormatter bf = new BinaryFormatter();
+            BinaryFormatter formatter = new BinaryFormatter();
             using (var ms = new MemoryStream())
             {
-                bf.Serialize(ms, obj);
+                formatter.Serialize(ms, obj);
                 return ms.ToArray();
             }
         }
 
         public static T ByteArrayToObject<T>(byte[] arrBytes)
         {
+            var binForm = new BinaryFormatter();
             using (var memStream = new MemoryStream())
             {
-                var binForm = new BinaryFormatter();
                 memStream.Write(arrBytes, 0, arrBytes.Length);
                 memStream.Seek(0, SeekOrigin.Begin);
                 var obj = binForm.Deserialize(memStream);
                 return (T)obj;
+            }
+        }
+
+        public static void SaveObjectToFile(Object obj, string filePath)
+        {
+            var formatter = new BinaryFormatter();
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                formatter.Serialize(stream, obj);
+            }
+        }
+
+        public static T ReadObjectFromFile<T>(string filePath)
+        {
+            try
+            {
+                var formatter = new BinaryFormatter();
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    var obj = formatter.Deserialize(stream);
+                    return (T)obj;
+                }
+            }
+            catch(Exception)
+            {
+                return default(T);
             }
         }
     }

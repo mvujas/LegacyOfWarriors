@@ -48,6 +48,7 @@
     <Compile Include="Interface\IEventHandlingContainer.cs" />
     <Compile Include="Interface\IMessageHandlingContainer.cs" />
     <Compile Include="Interface\IRemoteSender.cs" />
+    <Compile Include="NumberUtils.cs" />
     <Compile Include="Remote\LogicRouter.cs" />
     <Compile Include="Remote\MutableLogicRouter.cs" />
     <Compile Include="Remote\RemoteRequestMapper.cs" />
