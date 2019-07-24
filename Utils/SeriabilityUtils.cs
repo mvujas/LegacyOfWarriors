@@ -39,20 +39,14 @@ namespace Utils
             }
         }
 
+        // May throw an exception
         public static T ReadObjectFromFile<T>(string filePath)
         {
-            try
+            var formatter = new BinaryFormatter();
+            using (var stream = new FileStream(filePath, FileMode.Open))
             {
-                var formatter = new BinaryFormatter();
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    var obj = formatter.Deserialize(stream);
-                    return (T)obj;
-                }
-            }
-            catch(Exception)
-            {
-                return default(T);
+                var obj = formatter.Deserialize(stream);
+                return (T)obj;
             }
         }
     }
