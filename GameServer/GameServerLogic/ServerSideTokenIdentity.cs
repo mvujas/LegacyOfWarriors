@@ -8,10 +8,20 @@ using Utils.Net;
 
 namespace GameServer.GameServerLogic
 {
+    public enum UserMatchmakingStatus
+    {
+        QUEUE,
+        GAME,
+        NONE
+    }
+
     public class ServerSideTokenIdentity
     {
         public User LastlyFetchedUser { get; set; }
         public AsyncUserToken Token { get; set; }
+
+        public UserMatchmakingStatus MatchmakingStatus { get; set; }
+        public object MatchmakingLock { get; set; } = new object();
 
         public ServerSideTokenIdentity()
         {

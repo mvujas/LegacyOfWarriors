@@ -51,6 +51,7 @@
     <Compile Include="Implementation\LoginResponse.cs" />
     <Compile Include="Implementation\RequestProcessingError.cs" />
     <Compile Include="InGameObjects\Card.cs" />
+    <Compile Include="InGameObjects\CardInGame.cs" />
     <Compile Include="InGameObjects\CardList.cs" />
     <Compile Include="Interface\IRemoteObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

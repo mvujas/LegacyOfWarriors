@@ -98,9 +98,12 @@
     <Compile Include="GameServerLogic\EventHandling\ConcurrentSchedulingEventHandlingContainer.cs" />
     <Compile Include="GameServerLogic\ConcurrentScheduling\EventHandlingAgent.cs" />
     <Compile Include="GameServerLogic\ConcurrentScheduling\EventHandlingQueue.cs" />
+    <Compile Include="GameServerLogic\GameManager.cs" />
     <Compile Include="GameServerLogic\GameServer.cs" />
     <Compile Include="GameServerLogic\GameServerSpec.cs" />
     <Compile Include="GameServerLogic\CardGameLogicRouter.cs" />
+    <Compile Include="GameServerLogic\Matchmaker.cs" />
+    <Compile Include="GameServerLogic\MatchmakingException.cs" />
     <Compile Include="GameServerLogic\RequestHandling\CardGameRequestMapper.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\CardListRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />

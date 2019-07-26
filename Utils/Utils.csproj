@@ -45,6 +45,10 @@
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="DataTypes\ObjectPool.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="GameLogicUtils\Game.cs" />
+    <Compile Include="GameLogicUtils\IGameExecutionEngine.cs" />
+    <Compile Include="GameLogicUtils\LogicExecutionEngine.cs" />
+    <Compile Include="GameLogicUtils\PlayerInGame.cs" />
     <Compile Include="Interface\IEventHandlingContainer.cs" />
     <Compile Include="Interface\IMessageHandlingContainer.cs" />
     <Compile Include="Interface\IRemoteSender.cs" />

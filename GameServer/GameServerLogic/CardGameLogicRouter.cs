@@ -24,6 +24,7 @@ namespace GameServer.GameServerLogic
                 userToken.info = identity;
             }
             identity.Token = userToken;
+            identity.MatchmakingStatus = UserMatchmakingStatus.NONE;
             Console.WriteLine("User connected");
         }
 
