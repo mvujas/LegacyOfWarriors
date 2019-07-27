@@ -11,7 +11,7 @@ namespace Utils.GameLogicUtils
     public class Game
     {
         public PlayerInGame[] Players { get; private set; }
-        public int IndexOfPlayerWhoPlayTheTurn { get; private set; }
+        public int IndexOfPlayerWhoPlayTheTurn { get; set; }
 
         private int m_currentAvaliableCardGameId;
         private ObjectPool<CardInGame> m_cardInGamePool;

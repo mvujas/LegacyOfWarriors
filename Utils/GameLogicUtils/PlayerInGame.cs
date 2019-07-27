@@ -15,13 +15,22 @@ namespace Utils.GameLogicUtils
         GRAVEYARD
     }
 
+    public enum CardDrawingOutcome
+    {
+        SUCCESSFUL,
+        FULL_HAND,
+        EMPTY_DECK
+    }
+
     public class PlayerInGame
     {
         public Dictionary<PossibleCardPlace, LinkedList<CardInGame>> Cards { get; private set; } = 
             new Dictionary<PossibleCardPlace, LinkedList<CardInGame>>();
         private Dictionary<int, PossibleCardPlace> m_cardGameIdToPlaceMapping;
         private Dictionary<int, CardInGame> m_cardGameIdToCardInGameMapping = new Dictionary<int, CardInGame>();
-        public int Health { get; private set; }
+        public int Health { get; set; }
+
+        private int m_maxHandSize = 5;
 
         public PossibleCardPlace[] places = null;
 
@@ -81,6 +90,33 @@ namespace Utils.GameLogicUtils
             {
                 return false;
             }
+        }
+
+        public bool GetCard(int cardGameId, out CardInGame card)
+        {
+            return m_cardGameIdToCardInGameMapping.TryGetValue(cardGameId, out card);
+        }
+
+        public CardDrawingOutcome MoveFirstFromDeckToHand(out CardInGame card)
+        {
+            card = null;
+            var deck = Cards[PossibleCardPlace.DECK];
+            var hand = Cards[PossibleCardPlace.HAND];
+            CardInGame topOfTheDeck = deck.FirstOrDefault();
+            if (topOfTheDeck == default)
+            {
+                return CardDrawingOutcome.EMPTY_DECK;
+            }
+            if(hand.Count == m_maxHandSize)
+            {
+                return CardDrawingOutcome.FULL_HAND;
+            }
+
+            card = topOfTheDeck;
+            deck.RemoveFirst();
+            m_cardGameIdToPlaceMapping[card.InGameId] = PossibleCardPlace.HAND;
+            Cards[PossibleCardPlace.HAND].AddLast(card);
+            return CardDrawingOutcome.SUCCESSFUL;
         }
     }
 }
