@@ -24,13 +24,20 @@ namespace GameServer.GameServerLogic
                 userToken.info = identity;
             }
             identity.Token = userToken;
-            identity.MatchmakingStatus = UserMatchmakingStatus.NONE;
+            identity.MatchmakingStatus = UserMatchmakingStatus.NON_LOGGED;
             Console.WriteLine("User connected");
         }
 
         public override void OnUserDisconnect(AsyncUserToken userToken)
         {
             var identity = (ServerSideTokenIdentity)userToken.info;
+
+            lock(identity.MatchmakingLock)
+            {
+                // TO-DO: izbaciti iz queue-a ili igre u zavisnosti od toga gde se nalazi
+            }
+
+
             UserConnectionList.GetInstance().LogOutUserUnderIdentity(identity);
             identity.Reset();
             Console.WriteLine("User disconnected");

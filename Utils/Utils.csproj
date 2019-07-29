@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
+    <Compile Include="CardUtils.cs" />
     <Compile Include="DataTypes\ObjectPool.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="GameLogicUtils\Game.cs" />

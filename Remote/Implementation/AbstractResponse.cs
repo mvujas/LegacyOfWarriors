@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Remote.Implementation
 {
     [Serializable]
-    public class RegistrationResponse : IRemoteObject
+    public abstract class AbstractResponse : IRemoteObject
     {
         public bool Successfulness { get; set; }
         public string Message { get; set; }

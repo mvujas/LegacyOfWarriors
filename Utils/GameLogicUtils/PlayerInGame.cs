@@ -47,10 +47,12 @@ namespace Utils.GameLogicUtils
         {
             Health = startingHealth;
             ResetCards();
-            Cards[PossibleCardPlace.DECK] = startingDeck; 
-            foreach(var cardInGame in startingDeck)
+            Cards[PossibleCardPlace.DECK] = startingDeck;
+            m_cardGameIdToPlaceMapping = new Dictionary<int, PossibleCardPlace>();
+            foreach (var cardInGame in startingDeck)
             {
                 m_cardGameIdToCardInGameMapping[cardInGame.InGameId] = cardInGame;
+                m_cardGameIdToPlaceMapping[cardInGame.InGameId] = PossibleCardPlace.HAND;
             }
         }
 

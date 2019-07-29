@@ -12,7 +12,8 @@ namespace GameServer.GameServerLogic
     {
         QUEUE,
         GAME,
-        NONE
+        LOBBY,
+        NON_LOGGED
     }
 
     public class ServerSideTokenIdentity
@@ -32,6 +33,7 @@ namespace GameServer.GameServerLogic
         {
             LastlyFetchedUser = null;
             Token = null;
+            MatchmakingStatus = UserMatchmakingStatus.NON_LOGGED;
         }
     }
 }

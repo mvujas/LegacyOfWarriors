@@ -19,6 +19,32 @@ using Utils.Remote;
 
 namespace TestClient
 {
+    class QueueEntryResponseHandler : RequestHandler
+    {
+        public IRemoteObject Handle(AsyncUserToken token, IRemoteObject request)
+        {
+            var queueResponse = request as QueueEntryResponse;
+
+            Console.WriteLine("Odgovor na zahtev za red:");
+            Console.WriteLine($"Uspesnost: {queueResponse.Successfulness}\nPoruka: {queueResponse.Message}");
+
+            return null;
+        }
+    }
+
+    class QueueExitResponseHandler : RequestHandler
+    {
+        public IRemoteObject Handle(AsyncUserToken token, IRemoteObject request)
+        {
+            var queueResponse = request as QueueExitResponse;
+
+            Console.WriteLine("Odgovor na zahtev za izlazak iz reda:");
+            Console.WriteLine($"Uspesnost: {queueResponse.Successfulness}\nPoruka: {queueResponse.Message}");
+
+            return null;
+        }
+    }
+
     class LoginResponseHandler : RequestHandler
     {
         public IRemoteObject Handle(AsyncUserToken token, IRemoteObject request)
@@ -56,7 +82,9 @@ namespace TestClient
         private Dictionary<Type, RequestHandler> m_mapper = new Dictionary<Type, RequestHandler>
         {
             [typeof(LoginResponse)] = new LoginResponseHandler(),
-            [typeof(CardListResponse)] = new CardResponseHandler()
+            [typeof(CardListResponse)] = new CardResponseHandler(),
+            [typeof(QueueEntryResponse)] = new QueueEntryResponseHandler(),
+            [typeof(QueueExitResponse)] = new QueueExitResponseHandler()
         };
 
         protected override Dictionary<Type, RequestHandler> GetMapperDictionary()
@@ -65,6 +93,7 @@ namespace TestClient
         }
         protected override IRemoteObject InvalidTypeRepsonse()
         {
+            Console.WriteLine("Invalid Type");
             return null;
         }
     }
@@ -94,7 +123,31 @@ namespace TestClient
                 () => Console.WriteLine("Nije uspesno povezan")
             );
 
+            gameClient.Send(new LoginRequest
+            {
+                Username = "mvujas",
+                Password = "pera12345"
+            });
+
             gameClient.Send(new CardListRequest());
+
+            gameClient.Send(new QueueEntryRequest {
+                Deck = new int[]{ 0, 0, 0, 0 }
+            });
+
+            gameClient.Send(new QueueExitRequest());
+
+            gameClient.Send(new QueueEntryRequest
+            {
+                Deck = new int[] { 0, 0, 0, 0 }
+            });
+            gameClient.Send(new QueueEntryRequest
+            {
+                Deck = new int[] { 0, 0, 0, 0 }
+            });
+
+            gameClient.Send(new QueueExitRequest());
+            gameClient.Send(new QueueExitRequest());
 
             Console.WriteLine("Press any key to terminate game client...");
             Console.ReadKey();

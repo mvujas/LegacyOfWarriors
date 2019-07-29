@@ -33,11 +33,11 @@ namespace GameServer.GameServerLogic.RequestHandling.Handlers
             }
         }
 
-        private IRemoteObject TryToLogin(ServerSideTokenIdentity identity, string username, string password)
+        private LoginResponse TryToLogin(ServerSideTokenIdentity identity, string username, string password)
         {
             lock(identity)
             {
-                if (identity.LastlyFetchedUser != null)
+                if (identity.MatchmakingStatus != UserMatchmakingStatus.NON_LOGGED)
                 {
                     return new LoginResponse
                     {
@@ -58,6 +58,7 @@ namespace GameServer.GameServerLogic.RequestHandling.Handlers
                 }
 
                 identity.LastlyFetchedUser = user;
+                identity.MatchmakingStatus = UserMatchmakingStatus.LOBBY;
 
                 return new LoginResponse
                 {
