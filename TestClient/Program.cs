@@ -114,9 +114,10 @@ namespace TestClient
                 endPoint = endPoint
             };
 
-            GameClient gameClient = new GameClient(spec, new DefaultRemoteRequestMapper());
-
-            gameClient.OnDisconnect = () => Console.WriteLine("I'm disconnecting :/");
+            GameClient gameClient = new GameClient(spec, new DefaultRemoteRequestMapper())
+            {
+                OnDisconnect = () => Console.WriteLine("I'm disconnecting :/")
+            };
 
             gameClient.Start(
                 () => Console.WriteLine("Uspesno povezan"),
