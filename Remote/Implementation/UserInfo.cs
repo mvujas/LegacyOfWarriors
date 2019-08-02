@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace Remote.Implementation
 {
     [Serializable]
-    public class LoginResponse : AbstractResponse
+    public class UserInfo : IRemoteObject
     {
-        public UserInfo UserInfo { get; set; } = null;
+        public string Username { get; set; }
     }
 }

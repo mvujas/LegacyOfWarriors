@@ -55,6 +55,7 @@
     <Compile Include="Implementation\Registration\RegistrationResponse.cs" />
     <Compile Include="Implementation\Login\LoginResponse.cs" />
     <Compile Include="Implementation\RequestProcessingError.cs" />
+    <Compile Include="Implementation\UserInfo.cs" />
     <Compile Include="InGameObjects\Card.cs" />
     <Compile Include="InGameObjects\CardInGame.cs" />
     <Compile Include="InGameObjects\CardList.cs" />
