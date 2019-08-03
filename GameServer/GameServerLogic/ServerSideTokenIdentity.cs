@@ -12,6 +12,7 @@ namespace GameServer.GameServerLogic
     {
         QUEUE,
         GAME,
+        PREPARING_GAME,
         LOBBY,
         NON_LOGGED
     }

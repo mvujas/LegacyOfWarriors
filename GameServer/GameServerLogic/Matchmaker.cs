@@ -47,19 +47,26 @@ namespace GameServer.GameServerLogic
             lock (matchingLock)
             {
                 AsyncUserToken userToken = queueWrapper.Token;
+                ServerSideTokenIdentity identity = (ServerSideTokenIdentity)userToken.info;
                 if (userWaitingForMatch == null)
                 {
                     userWaitingForMatch = queueWrapper;
-                    ((ServerSideTokenIdentity)userToken.info).MatchmakingStatus = UserMatchmakingStatus.QUEUE;
+                    identity.MatchmakingStatus = UserMatchmakingStatus.QUEUE;
                 }
                 else
                 {
                     otherPlayer = userWaitingForMatch;
                     userWaitingForMatch = null;
+
+                    var otherPlayerIdentity = (ServerSideTokenIdentity)otherPlayer.Token.info;
+
+                    identity.MatchmakingStatus = UserMatchmakingStatus.PREPARING_GAME;
+                    otherPlayerIdentity.MatchmakingStatus = UserMatchmakingStatus.PREPARING_GAME;
                 }
             }
             if(otherPlayer != null)
             {
+                Console.WriteLine("Creating match!");
                 GAME_MANAGER.CreateGame(queueWrapper, otherPlayer);
             }
         }

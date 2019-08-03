@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 using Utils.Interface;
 using Utils.Net;
 using Utils.Remote;
+using Utils.Threading;
 
 namespace GameServer.GameServerLogic
 {
     public class CardGameLogicRouter : ServerSideLogicRouter
     {
         private RemoteRequestMapper m_requestMapper = new CardGameRequestMapper();
+        private Matchmaker m_matchmaker = Matchmaker.GetInstance();
 
         public override void OnUserConnect(AsyncUserToken userToken)
         {
@@ -32,15 +34,38 @@ namespace GameServer.GameServerLogic
         {
             var identity = (ServerSideTokenIdentity)userToken.info;
 
-            lock(identity.MatchmakingLock)
-            {
-                // TO-DO: izbaciti iz queue-a ili igre u zavisnosti od toga gde se nalazi
-            }
-
+            ThreadUtils.RepeatingTimeoutLock(
+                identity.MatchmakingLock,
+                () => ResolveMatchmakingStatusOnQuit(userToken),
+                millisecondsTimeOut: 1,
+                maxAttempts: 0,
+                interAttemptyDelay: 5
+            );
 
             UserConnectionList.GetInstance().LogOutUserUnderIdentity(identity);
             identity.Reset();
             Console.WriteLine("User disconnected");
+        }
+
+        private void ResolveMatchmakingStatusOnQuit(AsyncUserToken userToken)
+        {
+            var identity = (ServerSideTokenIdentity)userToken.info;
+            switch (identity.MatchmakingStatus)
+            {
+                case UserMatchmakingStatus.QUEUE:
+                {
+                    try
+                    {
+                        m_matchmaker.ExitQueue(userToken);
+                        Console.WriteLine("Napustio red pri izlasku!");
+                    }
+                    catch (Exception) { }
+                    break;
+                }
+                case UserMatchmakingStatus.GAME:
+
+                    break;
+            }
         }
 
         protected override RemoteRequestMapper GetRequestMapper()
