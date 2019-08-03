@@ -60,14 +60,18 @@ namespace GameServer.GameServerLogic
 
                     var otherPlayerIdentity = (ServerSideTokenIdentity)otherPlayer.Token.info;
 
+
                     identity.MatchmakingStatus = UserMatchmakingStatus.PREPARING_GAME;
-                    otherPlayerIdentity.MatchmakingStatus = UserMatchmakingStatus.PREPARING_GAME;
+                    lock(otherPlayerIdentity.MatchmakingLock)
+                    {
+                        otherPlayerIdentity.MatchmakingStatus = UserMatchmakingStatus.PREPARING_GAME;
+                    }
                 }
             }
             if(otherPlayer != null)
             {
                 Console.WriteLine("Creating match!");
-                GAME_MANAGER.CreateGame(queueWrapper, otherPlayer);
+                GAME_MANAGER.PrepareGame(queueWrapper, otherPlayer);
             }
         }
 

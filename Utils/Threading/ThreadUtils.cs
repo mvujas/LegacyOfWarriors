@@ -27,9 +27,8 @@ namespace Utils.Threading
             return isLockTaken;
         }
 
-        public static bool RepeatingTimeoutLock(object obj, Runnable runnable, int millisecondsTimeOut, int maxAttempts = 0, int interAttemptyDelay = 10)
+        public static bool RepeatingTimeoutLock(object obj, Runnable runnable, int millisecondsTimeOut, uint maxAttempts = 0, int interAttemptyDelay = 10)
         {
-            maxAttempts = Math.Max(0, maxAttempts);
             if(maxAttempts == 0)
             {
                 while(true)
@@ -40,16 +39,13 @@ namespace Utils.Threading
             }
             else
             {
-                for(int i = 1; i < maxAttempts; i++)
+                for(uint i = 1; i <= maxAttempts; i++)
                 {
-                    if(TimeOutLockWithDelay(obj, runnable, millisecondsTimeOut, interAttemptyDelay))
+                    int delay = (i != maxAttempts) ? interAttemptyDelay : 0;
+                    if(TimeOutLockWithDelay(obj, runnable, millisecondsTimeOut, delay))
                     {
                         return true;
                     }
-                }
-                if (TimeOutLockWithDelay(obj, runnable, millisecondsTimeOut, 0))
-                {
-                    return true;
                 }
             }
             return false;
@@ -57,16 +53,12 @@ namespace Utils.Threading
 
         private static bool TimeOutLockWithDelay(object obj, Runnable runnable, int millisecondsTimeOut, int delay)
         {
-            bool isSuccessful = TimeoutLock(obj, runnable, millisecondsTimeOut);
-            if(isSuccessful)
+            if(TimeoutLock(obj, runnable, millisecondsTimeOut))
             {
                 return true;
             }
 
-            if (delay > 0)
-            {
-                Thread.Sleep(delay);
-            }
+            Thread.Sleep(delay);
             return false;
         }
     }

@@ -63,7 +63,7 @@ namespace GameServer.GameServerLogic.RequestHandling.Handlers
                 return new LoginResponse
                 {
                     Successfulness = true,
-                    UserInfo = new UserInfo { Username = user.Username }
+                    UserInfo = UserLogic.GetUserInfo(user)
                 };
             }
         }

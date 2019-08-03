@@ -45,6 +45,7 @@
     <Compile Include="Implementation\AbstractResponse.cs" />
     <Compile Include="Implementation\CardList\CardListRequest.cs" />
     <Compile Include="Implementation\CardList\CardListResponse.cs" />
+    <Compile Include="Implementation\GameFoundNotification.cs" />
     <Compile Include="Implementation\InvalidRequest.cs" />
     <Compile Include="Implementation\Matchmaking\QueueEntryRequest.cs" />
     <Compile Include="Implementation\Matchmaking\QueueEntryResponse.cs" />

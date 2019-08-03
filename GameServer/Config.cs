@@ -8,6 +8,7 @@ namespace GameServer
     public static class Config
     {
         public static NameValueCollection DbConfig { get; set; }
+        public static GameServerLogic.GameServer GameServer { get; set; }
 
         public static void Prepare()
         {

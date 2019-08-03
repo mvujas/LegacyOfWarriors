@@ -8,6 +8,7 @@ using GameServer.Logic.Validation;
 using GameServer.Model;
 using DevOne.Security.Cryptography.BCrypt;
 using MySql.Data.MySqlClient;
+using Remote.Implementation;
 
 namespace GameServer.Logic
 {
@@ -62,6 +63,14 @@ namespace GameServer.Logic
         public static User GetUserById(long id)
         {
             return userRepo.GetById(id);
+        }
+
+        public static UserInfo GetUserInfo(User user)
+        {
+            return new UserInfo
+            {
+                Username = user.Username
+            };
         }
     }
 }

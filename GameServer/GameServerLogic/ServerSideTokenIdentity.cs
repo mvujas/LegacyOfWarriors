@@ -25,6 +25,8 @@ namespace GameServer.GameServerLogic
         public UserMatchmakingStatus MatchmakingStatus { get; set; }
         public object MatchmakingLock { get; set; } = new object();
 
+        public GameWrapper GameWrapper { get; set; } = null;
+
         public ServerSideTokenIdentity()
         {
             Reset();

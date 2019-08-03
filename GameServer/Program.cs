@@ -39,6 +39,8 @@ namespace GameServer
 
             var gameServer = new GameServer.GameServerLogic.GameServer(gameServerSpec, handler);
 
+            Config.GameServer = gameServer;
+
             gameServer.Start();
         }
     }
