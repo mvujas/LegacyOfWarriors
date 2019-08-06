@@ -60,7 +60,6 @@ namespace GameServer.GameServerLogic
 
                     var otherPlayerIdentity = (ServerSideTokenIdentity)otherPlayer.Token.info;
 
-
                     identity.MatchmakingStatus = UserMatchmakingStatus.PREPARING_GAME;
                     lock(otherPlayerIdentity.MatchmakingLock)
                     {
