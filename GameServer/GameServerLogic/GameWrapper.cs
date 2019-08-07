@@ -2,6 +2,7 @@
 using Utils.GameLogicUtils;
 using System;
 using Utils.Net;
+using System.Collections.Generic;
 
 namespace GameServer.GameServerLogic
 {
@@ -14,10 +15,10 @@ namespace GameServer.GameServerLogic
             Game = game ?? throw new ArgumentNullException(nameof(game));
         }
 
-        public void Reset()
+        public void Reset(params LinkedList<Card>[] decks)
         {
             IsReady = false;
-            Game.Reset();
+            Game.Reset(decks);
             m_tokens = null;
         }
 

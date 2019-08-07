@@ -9,6 +9,7 @@ using Utils.DataTypes;
 using Utils.Delegates;
 using Utils.GameLogicUtils;
 using Utils.Net;
+using Remote.Implementation;
 
 namespace GameServer.GameServerLogic
 {
@@ -35,17 +36,25 @@ namespace GameServer.GameServerLogic
                 throw new ArgumentException("Invalid number of players in game!");
             }
             AsyncUserToken[] userTokens = players.Select(player => player.Token).ToArray();
+            var decks = players.Select(player => player.Deck).ToArray();
             ServerSideTokenIdentity[] identities = userTokens.Select(token => (ServerSideTokenIdentity)token.info).ToArray();
             lock (identities[0].MatchmakingLock)
             {
-                lock(identities[1].MatchmakingLock)
+                lock (identities[1].MatchmakingLock)
                 {
                     var gameWrapper = m_gameWrapperObjectPool.GetObject();
-                    gameWrapper.Reset();
+                    gameWrapper.Reset(decks);
                     gameWrapper.Tokens = userTokens;
-
-                    Config.GameServer.Send(userTokens[0], UserLogic.GetUserInfo(identities[1].LastlyFetchedUser));
-                    Config.GameServer.Send(userTokens[1], UserLogic.GetUserInfo(identities[0].LastlyFetchedUser));
+                    
+                    Config.GameServer.Send(userTokens[0], new GameFoundNotification
+                    {
+                        EnemyInfo = UserLogic.GetUserInfo(identities[1].LastlyFetchedUser)
+                    });
+                    Config.GameServer.Send(userTokens[1], new GameFoundNotification
+                    {
+                        EnemyInfo = UserLogic.GetUserInfo(identities[0].LastlyFetchedUser)
+                    });
+                    
                 }
             }
         }

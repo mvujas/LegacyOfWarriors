@@ -10,7 +10,7 @@ namespace Utils.Remote
 {
     public abstract class RemoteRequestMapper
     {
-        protected abstract IRemoteObject InvalidTypeRepsonse();
+        protected abstract IRemoteObject InvalidTypeRepsonse(IRemoteObject remoteObject);
         protected abstract Dictionary<Type, RequestHandler> GetMapperDictionary();
 
         public IRemoteObject Handle(AsyncUserToken token, IRemoteObject remoteObject)
@@ -25,7 +25,7 @@ namespace Utils.Remote
             {
                 return handler.Handle(token, remoteObject);
             }
-            return InvalidTypeRepsonse();
+            return InvalidTypeRepsonse(remoteObject);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Utils.Remote
             return m_mapper;
         }
 
-        protected override IRemoteObject InvalidTypeRepsonse()
+        protected override IRemoteObject InvalidTypeRepsonse(IRemoteObject remoteObject)
         {
             return null;
         }

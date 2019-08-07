@@ -23,8 +23,9 @@ namespace Utils.Remote
             {
                 HandleRequest(messageWrapper);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine("Exception while processing: " + e);
                 OnMessageError(messageWrapper.UserToken);
             }
         }

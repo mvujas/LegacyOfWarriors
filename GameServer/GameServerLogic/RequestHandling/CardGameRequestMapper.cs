@@ -27,7 +27,7 @@ namespace GameServer.GameServerLogic.RequestHandling
             return m_mapping;
         }
 
-        protected override IRemoteObject InvalidTypeRepsonse()
+        protected override IRemoteObject InvalidTypeRepsonse(IRemoteObject remoteObject)
         {
             return m_invalidTypeHandlerResponse;
         }
