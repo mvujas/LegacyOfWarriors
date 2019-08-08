@@ -10,6 +10,7 @@ using Utils.Delegates;
 using Utils.GameLogicUtils;
 using Utils.Net;
 using Remote.Implementation;
+using Remote.InGameObjects;
 
 namespace GameServer.GameServerLogic
 {
@@ -17,6 +18,7 @@ namespace GameServer.GameServerLogic
     {
         private ObjectPool<GameWrapper> m_gameWrapperObjectPool;
         private Random m_random = new Random();
+        private LogicExecutionEngine executionEngine = new LogicExecutionEngine();
 
         private GameManager()
         {
@@ -97,17 +99,24 @@ namespace GameServer.GameServerLogic
                 if (areAllReady)
                 {
                     gameWrapper.IsReady = true;
-                    for(int i = 0; i < gameWrapper.Tokens.Length; i++)
+                    var game = gameWrapper.Game;
+                    for (int i = 0; i < gameWrapper.Tokens.Length; i++)
                     {
+                        executionEngine.DrawStartingHand(gameWrapper.Game, i, GameConfig.INITIAL_HAND_SIZE);
                         var token = gameWrapper.Tokens[i];
                         var tokenIdentity = (ServerSideTokenIdentity)token.info;
                         lock(tokenIdentity.MatchmakingLock)
                         {
                             tokenIdentity.MatchmakingStatus = UserMatchmakingStatus.GAME;
+                            if(!game.Players[i].Cards.TryGetValue(PossibleCardPlace.HAND, out LinkedList<CardInGame> startingHand))
+                            {
+                                Console.WriteLine("No hand in player cards dictionary");
+                                startingHand = new LinkedList<CardInGame>();
+                            }
                             Config.GameServer.Send(token, new StartingUserGameState
                             {
                                 PlayerIndex = i,
-                                StartingDeck = null
+                                StartingDeck = startingHand
                             });
                         }
                     }

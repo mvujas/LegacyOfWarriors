@@ -12,6 +12,6 @@ namespace Remote.Implementation
     public class StartingUserGameState : IRemoteObject
     {
         public int PlayerIndex { get; set; }
-        public List<CardInGame> StartingDeck { get; set; }
+        public LinkedList<CardInGame> StartingDeck { get; set; }
     }
 }

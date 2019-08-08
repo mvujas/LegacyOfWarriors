@@ -97,5 +97,14 @@ namespace Utils.GameLogicUtils
             var player = game.Players[nextPlayerIndex];
             return player.MoveFirstFromDeckToHand(out card); 
         }
+
+        public void DrawStartingHand(Game game, int playerIndex, int initialHandSize)
+        {
+            var player = game.Players[playerIndex];
+            for(int i = 0; i < initialHandSize; i++)
+            {
+                player.MoveFirstFromDeckToHand(out _);
+            }
+        }
     }
 }
