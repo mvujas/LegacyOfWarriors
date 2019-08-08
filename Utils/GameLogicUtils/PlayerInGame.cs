@@ -15,13 +15,6 @@ namespace Utils.GameLogicUtils
         GRAVEYARD
     }
 
-    public enum CardDrawingOutcome
-    {
-        SUCCESSFUL,
-        FULL_HAND,
-        EMPTY_DECK
-    }
-
     public class PlayerInGame
     {
         public Dictionary<PossibleCardPlace, LinkedList<CardInGame>> Cards { get; private set; } = 
@@ -29,6 +22,7 @@ namespace Utils.GameLogicUtils
         private Dictionary<int, PossibleCardPlace> m_cardGameIdToPlaceMapping;
         private Dictionary<int, CardInGame> m_cardGameIdToCardInGameMapping = new Dictionary<int, CardInGame>();
         public int Health { get; set; }
+        public int Mana { get; set; }
 
         private int m_maxHandSize = 5;
 

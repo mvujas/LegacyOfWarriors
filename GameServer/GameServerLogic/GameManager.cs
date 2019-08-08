@@ -74,6 +74,7 @@ namespace GameServer.GameServerLogic
         public void MarkUserAsReadyForGame(AsyncUserToken userToken)
         {
             var identity = (ServerSideTokenIdentity)userToken.info;
+            // BEWARE THAT MATCHMAKING STATUS MAY CHANGE WHILE GAINING LOCK ON GAME WRAPPER
             if (identity.MatchmakingStatus != UserMatchmakingStatus.PREPARING_GAME)
             {
                 throw new MatchmakingException("Korisnik se ne priprema za igru");
@@ -98,31 +99,79 @@ namespace GameServer.GameServerLogic
 
                 if (areAllReady)
                 {
-                    gameWrapper.IsReady = true;
-                    var game = gameWrapper.Game;
-                    for (int i = 0; i < gameWrapper.Tokens.Length; i++)
-                    {
-                        executionEngine.DrawStartingHand(gameWrapper.Game, i, GameConfig.INITIAL_HAND_SIZE);
-                        var token = gameWrapper.Tokens[i];
-                        var tokenIdentity = (ServerSideTokenIdentity)token.info;
-                        lock(tokenIdentity.MatchmakingLock)
-                        {
-                            tokenIdentity.MatchmakingStatus = UserMatchmakingStatus.GAME;
-                            if(!game.Players[i].Cards.TryGetValue(PossibleCardPlace.HAND, out LinkedList<CardInGame> startingHand))
-                            {
-                                Console.WriteLine("No hand in player cards dictionary");
-                                startingHand = new LinkedList<CardInGame>();
-                            }
-                            Config.GameServer.Send(token, new StartingUserGameState
-                            {
-                                PlayerIndex = i,
-                                StartingDeck = startingHand
-                            });
-                        }
-                    }
+                    FinalizeGamePreparation(gameWrapper);
                     Console.WriteLine("Igra spremna");
-                    // TO-DO: Notify users, give them hands
                 }
+            }
+        }
+
+        private void FinalizeGamePreparation(GameWrapper gameWrapper)
+        {
+            lock(gameWrapper.@lock)
+            {
+                gameWrapper.IsReady = true;
+                var game = gameWrapper.Game;
+                for (int i = 0; i < gameWrapper.Tokens.Length; i++)
+                {
+                    executionEngine.DrawStartingHand(gameWrapper.Game, i, GameConfig.INITIAL_HAND_SIZE);
+                    var token = gameWrapper.Tokens[i];
+                    var tokenIdentity = (ServerSideTokenIdentity)token.info;
+                    lock (tokenIdentity.MatchmakingLock)
+                    {
+                        tokenIdentity.MatchmakingStatus = UserMatchmakingStatus.GAME;
+                        if (!game.Players[i].Cards.TryGetValue(PossibleCardPlace.HAND, out LinkedList<CardInGame> startingHand))
+                        {
+                            Console.WriteLine("No hand in player cards dictionary");
+                            startingHand = new LinkedList<CardInGame>();
+                        }
+                        Config.GameServer.Send(token, new StartingUserGameState
+                        {
+                            PlayerIndex = i,
+                            StartingDeck = startingHand
+                        });
+                    }
+                }
+                NextTurn(gameWrapper, true);
+            }
+        }
+
+        private void NextTurn(GameWrapper gameWrapper, bool isFirstTurn = false)
+        {
+            lock(gameWrapper.@lock)
+            {
+                CardDrawingOutcome drawingOutcome = 
+                    executionEngine.NewTurn(gameWrapper.Game, out int playerIndex, out CardInGame card, out int mana, isFirstTurn);
+                for(int i = 0; i < gameWrapper.Tokens.Length; i++)
+                {
+                    var token = gameWrapper.Tokens[i];
+                    Config.GameServer.Send(token, new NewTurnNotification
+                    {
+                        PlayerIndex = playerIndex,
+                        DrawnCard = (i == playerIndex) ? card : null,
+                        DrawingOutcome = drawingOutcome,
+                        Mana = mana
+                    });
+                }
+            }
+        }
+
+        public void EndTurn(AsyncUserToken token)
+        {
+            // SAME AS METHOD MarkUserAsReadyForGame, TRY TO SOLVE IT LATER
+            var identity = (ServerSideTokenIdentity)token.info;
+            var gameWrapper = identity.GameWrapper;
+            if(gameWrapper == null || identity.MatchmakingStatus != UserMatchmakingStatus.GAME)
+            {
+                throw new MatchmakingException("Korisnik nije u igri");
+            }
+            lock(gameWrapper.@lock)
+            {
+                var game = gameWrapper.Game;
+                if(gameWrapper.Tokens[game.IndexOfPlayerWhoPlayTheTurn] != token)
+                {
+                    throw new MatchmakingException("Igrač nije na potezu");
+                }
+                NextTurn(gameWrapper);
             }
         }
     }

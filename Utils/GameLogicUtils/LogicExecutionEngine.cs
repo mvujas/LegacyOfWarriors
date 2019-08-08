@@ -1,4 +1,5 @@
-﻿using Remote.InGameObjects;
+﻿using ProjectLevelConfig;
+using Remote.InGameObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,10 +92,22 @@ namespace Utils.GameLogicUtils
             player.MoveCard(cardToBePlayed, PossibleCardPlace.FIELD);
         }
 
-        public virtual CardDrawingOutcome NewTurn(Game game, out int nextPlayerIndex, out CardInGame card)
+        public virtual CardDrawingOutcome NewTurn(Game game, out int nextPlayerIndex, out CardInGame card, out int mana, bool isFirstTurn = false)
         {
-            nextPlayerIndex = ++game.IndexOfPlayerWhoPlayTheTurn;
+            if(isFirstTurn)
+            {
+                game.IndexOfPlayerWhoPlayTheTurn = 0;
+                game.AccumulativeTurn = 0;
+            }
+            else
+            {
+                game.IndexOfPlayerWhoPlayTheTurn = (game.IndexOfPlayerWhoPlayTheTurn + 1) % game.Players.Length;
+                game.AccumulativeTurn++;
+            }
+            nextPlayerIndex = game.IndexOfPlayerWhoPlayTheTurn;
             var player = game.Players[nextPlayerIndex];
+            player.Mana = Math.Min((game.AccumulativeTurn / game.Players.Length) + 1, GameConfig.MAX_MANA);
+            mana = player.Mana;
             return player.MoveFirstFromDeckToHand(out card); 
         }
 

@@ -107,6 +107,7 @@
     <Compile Include="GameServerLogic\MatchmakingException.cs" />
     <Compile Include="GameServerLogic\RequestHandling\CardGameRequestMapper.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\CardListRequestHandler.cs" />
+    <Compile Include="GameServerLogic\RequestHandling\Handlers\EndTurnRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\QueueEntryRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\QueueExitRequestHandler.cs" />

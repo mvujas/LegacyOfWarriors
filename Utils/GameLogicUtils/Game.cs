@@ -13,6 +13,8 @@ namespace Utils.GameLogicUtils
         public PlayerInGame[] Players { get; private set; }
         public int IndexOfPlayerWhoPlayTheTurn { get; set; }
 
+        public int AccumulativeTurn { get; set; }
+
         private int m_currentAvaliableCardGameId;
         private ObjectPool<CardInGame> m_cardInGamePool;
         private int m_startingHealth;
@@ -50,6 +52,7 @@ namespace Utils.GameLogicUtils
             }
             m_currentAvaliableCardGameId = 0;
             IndexOfPlayerWhoPlayTheTurn = 0;
+            AccumulativeTurn = 0;
             for (int i = 0; i < decks.Length; i++)
             {
                 var deck = decks[i];

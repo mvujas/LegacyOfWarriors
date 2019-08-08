@@ -9,6 +9,7 @@ using Utils.Net;
 using Utils.Remote;
 using Utils;
 using Remote.InGameObjects;
+using ProjectLevelConfig;
 
 namespace GameServer.GameServerLogic.RequestHandling.Handlers
 {
@@ -24,7 +25,16 @@ namespace GameServer.GameServerLogic.RequestHandling.Handlers
             var response = new QueueEntryResponse();
             try
             {
+                if(queueEntryRequest.Deck == null)
+                {
+                    throw new MatchmakingException("Neodgovarajuć špil");
+                }
                 var deck = CardUtils.CardIdsToLinkedList(cardList, queueEntryRequest.Deck);
+                if(deck.Count != GameConfig.DECK_SIZE)
+                {
+                    throw new MatchmakingException("Neodgovarajuća veličina špila");
+                }
+
                 var queueEntry = new UserQueueWrapper
                 {
                     Token = token,

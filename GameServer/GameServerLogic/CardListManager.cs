@@ -9,7 +9,7 @@ namespace GameServer.GameServerLogic
 {
     public static class CardListManager
     {
-        private static CardList cardList = new CardList("v1.0");
+        private static CardList cardList = new CardList("v1.0.1");
         static CardListManager()
         {
             AddCardsToCardList();
@@ -23,6 +23,8 @@ namespace GameServer.GameServerLogic
         {
             cardList.AddCard(name: "Druid", clientSideImage: "druid", 
                 cost: 1, attack: 5, health: 10);
+            cardList.AddCard(name: "Muppet", clientSideImage: "muppet",
+                cost: 2, attack: 5, health: 1);
         }
     }
 }
