@@ -4,6 +4,8 @@ namespace Utils
 {
     public static class ArrayUtils
     {
+        private static Random random = new Random();
+
         public static T[] MergeArrays<T>(T[] a1, T[] a2)
         {
             T[] result = new T[a1.Length + a2.Length];
@@ -26,6 +28,20 @@ namespace Utils
             T[] result = new T[length];
             Array.Copy(source, index, result, 0, length);
             return result;
+        }
+
+        public static void Shuffle<T>(ref T[] arr)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                int newIndex = random.Next(arr.Length);
+                if(i != newIndex)
+                {
+                    T tmp = arr[i];
+                    arr[i] = arr[newIndex];
+                    arr[newIndex] = tmp;
+                }
+            }
         }
     }
 }

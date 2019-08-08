@@ -16,6 +16,7 @@ namespace GameServer.GameServerLogic
     public class GameManager
     {
         private ObjectPool<GameWrapper> m_gameWrapperObjectPool;
+        private Random m_random = new Random();
 
         private GameManager()
         {
@@ -35,6 +36,9 @@ namespace GameServer.GameServerLogic
             {
                 throw new ArgumentException("Invalid number of players in game!");
             }
+
+            Utils.ArrayUtils.Shuffle(ref players);
+
             AsyncUserToken[] userTokens = players.Select(player => player.Token).ToArray();
             var decks = players.Select(player => player.Deck).ToArray();
             ServerSideTokenIdentity[] identities = userTokens.Select(token => (ServerSideTokenIdentity)token.info).ToArray();
@@ -46,15 +50,69 @@ namespace GameServer.GameServerLogic
                     gameWrapper.Reset(decks);
                     gameWrapper.Tokens = userTokens;
                     
-                    Config.GameServer.Send(userTokens[0], new GameFoundNotification
+                    for(int i = 0; i < players.Length; i++)
                     {
-                        EnemyInfo = UserLogic.GetUserInfo(identities[1].LastlyFetchedUser)
-                    });
-                    Config.GameServer.Send(userTokens[1], new GameFoundNotification
+                        identities[i].GameWrapper = gameWrapper;
+
+                        var playerIndex = i;
+                        var enemyIndex = players.Length - 1 - i;
+                        Config.GameServer.Send(userTokens[playerIndex], new GameFoundNotification
+                        {
+                            EnemyInfo = UserLogic.GetUserInfo(identities[enemyIndex].LastlyFetchedUser),
+                            PlayersHealth = GameConfig.STARTING_HEALTH,
+                            PlayersDeckSize = decks[playerIndex].Count,
+                            EnemiesHealth = GameConfig.STARTING_HEALTH,
+                            EnemiesDeckSize = decks[enemyIndex].Count
+                        });
+                    }
+                }
+            }
+        }
+
+        public void MarkUserAsReadyForGame(AsyncUserToken userToken)
+        {
+            var identity = (ServerSideTokenIdentity)userToken.info;
+            if (identity.MatchmakingStatus != UserMatchmakingStatus.PREPARING_GAME)
+            {
+                throw new MatchmakingException("Korisnik se ne priprema za igru");
+            }
+            var gameWrapper = identity.GameWrapper;
+            lock (gameWrapper.@lock)
+            {
+                if (gameWrapper.IsReady)
+                {
+                    throw new MatchmakingException("Igra je već spremna");
+                }
+
+                bool areAllReady = true;
+                for (int i = 0; i < gameWrapper.Tokens.Length; i++)
+                {
+                    if (gameWrapper.Tokens[i] == userToken)
                     {
-                        EnemyInfo = UserLogic.GetUserInfo(identities[0].LastlyFetchedUser)
-                    });
-                    
+                        gameWrapper.PlayersReadyStatus[i] = true;
+                    }
+                    areAllReady &= gameWrapper.PlayersReadyStatus[i];
+                }
+
+                if (areAllReady)
+                {
+                    gameWrapper.IsReady = true;
+                    for(int i = 0; i < gameWrapper.Tokens.Length; i++)
+                    {
+                        var token = gameWrapper.Tokens[i];
+                        var tokenIdentity = (ServerSideTokenIdentity)token.info;
+                        lock(tokenIdentity.MatchmakingLock)
+                        {
+                            tokenIdentity.MatchmakingStatus = UserMatchmakingStatus.GAME;
+                            Config.GameServer.Send(token, new StartingUserGameState
+                            {
+                                PlayerIndex = i,
+                                StartingDeck = null
+                            });
+                        }
+                    }
+                    Console.WriteLine("Igra spremna");
+                    // TO-DO: Notify users, give them hands
                 }
             }
         }

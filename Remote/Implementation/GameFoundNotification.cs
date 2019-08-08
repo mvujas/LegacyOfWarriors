@@ -11,5 +11,9 @@ namespace Remote.Implementation
     public class GameFoundNotification : IRemoteObject
     {
         public UserInfo EnemyInfo { get; set; }
+        public int PlayersDeckSize { get; set; }
+        public int EnemiesDeckSize { get; set; }
+        public int PlayersHealth { get; set; }
+        public int EnemiesHealth { get; set; }
     }
 }

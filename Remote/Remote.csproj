@@ -56,12 +56,14 @@
     <Compile Include="Implementation\Registration\RegistrationResponse.cs" />
     <Compile Include="Implementation\Login\LoginResponse.cs" />
     <Compile Include="Implementation\RequestProcessingError.cs" />
+    <Compile Include="Implementation\StartingUserGameState.cs" />
     <Compile Include="Implementation\UserInfo.cs" />
     <Compile Include="InGameObjects\Card.cs" />
     <Compile Include="InGameObjects\CardInGame.cs" />
     <Compile Include="InGameObjects\CardList.cs" />
     <Compile Include="Interface\IRemoteObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Implementation\UserReadyNotification.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

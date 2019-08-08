@@ -17,7 +17,8 @@ namespace GameServer.GameServerLogic.RequestHandling
             [typeof(RegistrationRequest)] = new RegistrationHandler(),
             [typeof(CardListRequest)] = new CardListRequestHandler(),
             [typeof(QueueEntryRequest)] = new QueueEntryRequestHandler(),
-            [typeof(QueueExitRequest)] = new QueueExitRequestHandler()
+            [typeof(QueueExitRequest)] = new QueueExitRequestHandler(),
+            [typeof(UserReadyNotification)] = new UserReadyNotificationHandler()
         };
 
         private IRemoteObject m_invalidTypeHandlerResponse = new InvalidRequest();
