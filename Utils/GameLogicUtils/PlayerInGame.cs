@@ -101,7 +101,6 @@ namespace Utils.GameLogicUtils
             var deck = Cards[PossibleCardPlace.DECK];
             var hand = Cards[PossibleCardPlace.HAND];
             CardInGame topOfTheDeck = deck.FirstOrDefault();
-            Console.WriteLine("Top of the deck: " + topOfTheDeck);
             if (topOfTheDeck == default)
             {
                 return CardDrawingOutcome.EMPTY_DECK;

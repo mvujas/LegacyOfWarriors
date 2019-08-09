@@ -41,7 +41,7 @@ namespace Utils.GameLogicUtils
                 throw new LogicExecutionException("Neka od karata nije na terenu");
             }
             attackerOwnerPlayer.GetCard(cardThatAttacks, out CardInGame attacker);
-            attackedOwnerPlayer.GetCard(cardThatAttacks, out CardInGame attacked);
+            attackedOwnerPlayer.GetCard(cardToBeAttacked, out CardInGame attacked);
 
             attacked.Health -= attacker.Attack;
             attacker.Health -= attacked.Attack;
