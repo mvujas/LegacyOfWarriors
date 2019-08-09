@@ -27,6 +27,7 @@ namespace GameServer.GameServerLogic
                 new GameWrapper(new Game(GameConfig.NUMBER_OF_PLAYERS, GameConfig.STARTING_HEALTH, GameConfig.DECK_SIZE));
             m_gameWrapperObjectPool = new ObjectPool<GameWrapper>(gameWrapperSupplier, 10, growable: true);
         }
+
         private static GameManager instance = new GameManager();
         public static GameManager GetInstance()
         {
@@ -270,6 +271,57 @@ namespace GameServer.GameServerLogic
                     }
                 }
                 m_gameWrapperObjectPool.ReleaseObject(gameWrapper);
+            }
+        }
+
+        public void Attack(AsyncUserToken userToken, int? attackingUnit, int targetPlayer, int? targetUnit)
+        {
+            var identity = (ServerSideTokenIdentity)userToken.info;
+            var gameWrapper = identity.GameWrapper;
+            if (gameWrapper == null || identity.MatchmakingStatus != UserMatchmakingStatus.GAME)
+            {
+                throw new LogicExecutionException("Korisnik nije u igri");
+            }
+            lock (gameWrapper.@lock)
+            {
+                var game = gameWrapper.Game;
+                if (gameWrapper.Tokens[game.IndexOfPlayerWhoPlayTheTurn] != userToken)
+                {
+                    throw new LogicExecutionException("Igrač nije na potezu");
+                }
+                if(attackingUnit == null)
+                {
+                    throw new LogicExecutionException("Data opcija jos nije podrzana");
+                }
+
+                int attackerRemainingHealth, targetRemainingHealth;
+                if(targetUnit == null)
+                {
+                    executionEngine.AttackPlayer(game, game.IndexOfPlayerWhoPlayTheTurn, (int)attackingUnit, targetPlayer, 
+                        out attackerRemainingHealth, out targetRemainingHealth);
+                }
+                else
+                {
+                    executionEngine.AttackCard(game, game.IndexOfPlayerWhoPlayTheTurn, (int)attackingUnit, targetPlayer, (int)targetUnit,
+                        out attackerRemainingHealth, out targetRemainingHealth);
+                }
+
+                AttackNotification attackNotification = new AttackNotification
+                {
+                    AttackingPlayer = game.IndexOfPlayerWhoPlayTheTurn,
+                    AttackingUnit = attackingUnit,
+                    TargetPlayer = targetPlayer,
+                    TargetUnit = targetUnit,
+                    AttackerRemainingHealth = attackerRemainingHealth,
+                    TargetRemainingHealth = targetRemainingHealth
+                };
+
+                foreach (var token in gameWrapper.Tokens)
+                {
+                    Config.GameServer.Send(token, attackNotification);
+                }
+
+                CheckIfPlayerDied(gameWrapper);
             }
         }
     }

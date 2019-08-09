@@ -46,6 +46,9 @@
     <Compile Include="Implementation\CardList\CardListRequest.cs" />
     <Compile Include="Implementation\CardList\CardListResponse.cs" />
     <Compile Include="Implementation\CardPlayedNotification.cs" />
+    <Compile Include="Implementation\AttackNotification.cs" />
+    <Compile Include="Implementation\AttackRequest.cs" />
+    <Compile Include="Implementation\AttackResponse.cs" />
     <Compile Include="Implementation\EndTurnRequest.cs" />
     <Compile Include="Implementation\EndTurnResponse.cs" />
     <Compile Include="Implementation\GameFinishedNotification.cs" />

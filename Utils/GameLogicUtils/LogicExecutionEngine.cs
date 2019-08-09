@@ -10,18 +10,27 @@ namespace Utils.GameLogicUtils
 {
     public class LogicExecutionEngine
     {
-        public virtual void AttackCard(Game game, int playerIndex, int cardThatAttacks, int cardToBeAttacked)
+        public virtual void AttackCard(Game game, int playerIndex, int cardThatAttacks, int attackedPlayer, int cardToBeAttacked, 
+            out int attackerRemainingHealth, out int targetRemainingHealth)
         {
-            if(game.IndexOfPlayerWhoPlayTheTurn != playerIndex)
+            if(playerIndex > game.Players.Length || attackedPlayer > game.Players.Length)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Bar jedan od igraca je nevalidan");
             }
 
             int attackerOwner = game.IndexOfPlayerThatOwnsCard(cardThatAttacks);
             int attackedOwner = game.IndexOfPlayerThatOwnsCard(cardToBeAttacked);
-            if(playerIndex != attackerOwner || attackerOwner == playerIndex)
+            if(playerIndex != attackerOwner)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Igrac ne poseduje datu kartu");
+            }
+            if (attackedPlayer != attackedOwner)
+            {
+                throw new LogicExecutionException("Napadnuti igrac ne poseduje datu kartu");
+            }
+            if (attackedOwner == playerIndex)
+            {
+                throw new LogicExecutionException("Igrac ne moze napasti svoju kartu");
             }
             var attackerOwnerPlayer = game.Players[attackerOwner];
             var attackedOwnerPlayer = game.Players[attackedOwner];
@@ -29,14 +38,18 @@ namespace Utils.GameLogicUtils
             attackedOwnerPlayer.DoesPlayerOwnCard(cardToBeAttacked, out PossibleCardPlace attackedPlace);
             if(attackerPlace != PossibleCardPlace.FIELD || attackedPlace != PossibleCardPlace.FIELD)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Neka od karata nije na terenu");
             }
             attackerOwnerPlayer.GetCard(cardThatAttacks, out CardInGame attacker);
             attackedOwnerPlayer.GetCard(cardThatAttacks, out CardInGame attacked);
 
             attacked.Health -= attacker.Attack;
             attacker.Health -= attacked.Attack;
-            if(attacked.Health <= 0)
+
+            attackerRemainingHealth = Math.Max(0, attacker.Health);
+            targetRemainingHealth = Math.Max(0, attacked.Health);
+
+            if (attacked.Health <= 0)
             {
                 Die(attackedOwnerPlayer, attacked);
             }
@@ -47,26 +60,32 @@ namespace Utils.GameLogicUtils
         }
 
         /// <returns>Whether attacked player dies</returns>
-        public bool AttackPlayer(Game game, int playerIndex, int cardThatAttacks, int playerIndexToBeAttacked)
+        public bool AttackPlayer(Game game, int playerIndex, int cardThatAttacks, int playerIndexToBeAttacked, 
+            out int attackerRemainingHealth, out int targetRemainingHealth)
         {
-            if(game.IndexOfPlayerWhoPlayTheTurn != playerIndex)
+            if (playerIndex > game.Players.Length || playerIndexToBeAttacked > game.Players.Length)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Bar jedan od igraca je nevalidan");
             }
-            if(playerIndex == playerIndexToBeAttacked)
+
+            if (playerIndex == playerIndexToBeAttacked)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Igrac ne moze napasti samog sebe");
             }
             PlayerInGame attacker = game.Players[playerIndex];
             PlayerInGame attacked = game.Players[playerIndexToBeAttacked];
             if(!attacker.DoesPlayerOwnCard(cardThatAttacks, out PossibleCardPlace place) ||
                 place != PossibleCardPlace.FIELD)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Karta nije na igracevom terenu");
             }
 
             attacker.GetCard(cardThatAttacks, out CardInGame card);
             attacked.Health -= card.Attack;
+
+            attackerRemainingHealth = card.Health;
+            targetRemainingHealth = Math.Max(0, attacked.Health);
+
             return attacked.Health <= 0;
         }
 
