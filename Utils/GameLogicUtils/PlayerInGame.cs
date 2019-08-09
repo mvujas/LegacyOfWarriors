@@ -106,13 +106,14 @@ namespace Utils.GameLogicUtils
             {
                 return CardDrawingOutcome.EMPTY_DECK;
             }
-            if(hand.Count == m_maxHandSize)
+            card = topOfTheDeck;
+            deck.RemoveFirst();
+            if (hand.Count == m_maxHandSize)
             {
+                m_cardGameIdToPlaceMapping[card.InGameId] = PossibleCardPlace.GRAVEYARD;
                 return CardDrawingOutcome.FULL_HAND;
             }
 
-            card = topOfTheDeck;
-            deck.RemoveFirst();
             m_cardGameIdToPlaceMapping[card.InGameId] = PossibleCardPlace.HAND;
             Cards[PossibleCardPlace.HAND].AddLast(card);
             return CardDrawingOutcome.SUCCESSFUL;
