@@ -48,6 +48,7 @@
     <Compile Include="Implementation\CardPlayedNotification.cs" />
     <Compile Include="Implementation\EndTurnRequest.cs" />
     <Compile Include="Implementation\EndTurnResponse.cs" />
+    <Compile Include="Implementation\GameFinishedNotification.cs" />
     <Compile Include="Implementation\GameFoundNotification.cs" />
     <Compile Include="Implementation\InvalidRequest.cs" />
     <Compile Include="Implementation\Matchmaking\QueueEntryRequest.cs" />

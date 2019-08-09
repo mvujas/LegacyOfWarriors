@@ -14,6 +14,7 @@ using Remote.InGameObjects;
 
 namespace GameServer.GameServerLogic
 {
+    // TO-DO: EXAMINE THREAD-SAFETY OF THIS CLASS
     public class GameManager
     {
         private ObjectPool<GameWrapper> m_gameWrapperObjectPool;
@@ -174,6 +175,7 @@ namespace GameServer.GameServerLogic
                     throw new LogicExecutionException("Igrač nije na potezu");
                 }
                 NextTurn(gameWrapper);
+                CheckIfPlayerDied(gameWrapper);
             }
         }
 
@@ -206,6 +208,68 @@ namespace GameServer.GameServerLogic
                     var token = gameWrapper.Tokens[i];
                     Config.GameServer.Send(token, cardPlayedNotification);
                 }
+            }
+        }
+
+        // This works only for 2 player game because only that is implemented in first iteration
+        // 2 players can't loose health as cause of single action in current state of the game
+        private void CheckIfPlayerDied(GameWrapper gameWrapper)
+        {
+            if (gameWrapper == null)
+            {
+                throw new ArgumentNullException(nameof(gameWrapper));
+            }
+
+            lock(gameWrapper.@lock)
+            {
+                var game = gameWrapper.Game;
+                if(game.Players.Length != 2)
+                {
+                    throw new ArgumentException("Meyhod works only for 2 player games");
+                }
+
+                int? winner = null;
+                for(int i = 0; i < game.Players.Length && winner == null; i++)
+                {
+                    if(game.Players[i].Health <= 0)
+                    {
+                        winner = 1 - i;
+                    }
+                }
+
+                if(winner != null)
+                {
+                    GameFinishedNotification gameFinishedNotification = new GameFinishedNotification { WinnerPlayerId = (int)winner };
+
+                    foreach(var token in gameWrapper.Tokens)
+                    {
+                        Config.GameServer.Send(token, gameFinishedNotification);
+                    }
+
+                    TerminateGame(gameWrapper);
+                }
+            }
+        }
+
+        private void TerminateGame(GameWrapper gameWrapper)
+        {
+            if (gameWrapper == null)
+            {
+                throw new ArgumentNullException(nameof(gameWrapper));
+            }
+
+            lock (gameWrapper.@lock)
+            {
+                foreach(var token in gameWrapper.Tokens)
+                {
+                    var identity = (ServerSideTokenIdentity)token.info;
+                    lock(identity.MatchmakingLock)
+                    {
+                        identity.MatchmakingStatus = UserMatchmakingStatus.LOBBY;
+                        identity.GameWrapper = null;
+                    }
+                }
+                m_gameWrapperObjectPool.ReleaseObject(gameWrapper);
             }
         }
     }
