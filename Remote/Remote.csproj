@@ -45,6 +45,7 @@
     <Compile Include="Implementation\AbstractResponse.cs" />
     <Compile Include="Implementation\CardList\CardListRequest.cs" />
     <Compile Include="Implementation\CardList\CardListResponse.cs" />
+    <Compile Include="Implementation\CardPlayedNotification.cs" />
     <Compile Include="Implementation\EndTurnRequest.cs" />
     <Compile Include="Implementation\EndTurnResponse.cs" />
     <Compile Include="Implementation\GameFoundNotification.cs" />
@@ -54,6 +55,8 @@
     <Compile Include="Implementation\Matchmaking\QueueExitRequest.cs" />
     <Compile Include="Implementation\Matchmaking\QueueExitResponse.cs" />
     <Compile Include="Implementation\NewTurnNotification.cs" />
+    <Compile Include="Implementation\PlayCardRequest.cs" />
+    <Compile Include="Implementation\PlayCardResponse.cs" />
     <Compile Include="Implementation\Registration\RegistrationRequest.cs" />
     <Compile Include="Implementation\Login\LoginRequest.cs" />
     <Compile Include="Implementation\Registration\RegistrationResponse.cs" />

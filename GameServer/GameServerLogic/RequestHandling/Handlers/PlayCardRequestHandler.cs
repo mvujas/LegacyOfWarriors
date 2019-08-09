@@ -11,25 +11,26 @@ using Utils.Remote;
 
 namespace GameServer.GameServerLogic.RequestHandling.Handlers
 {
-    public class EndTurnRequestHandler : RequestHandler
+    public class PlayCardRequestHandler : RequestHandler
     {
         private static GameManager GAME_MANAGER = GameManager.GetInstance();
 
         public IRemoteObject Handle(AsyncUserToken token, IRemoteObject request)
         {
-            EndTurnResponse response = new EndTurnResponse
+            PlayCardRequest playCardRequest = request as PlayCardRequest;
+            PlayCardResponse response = new PlayCardResponse
             {
                 Successfulness = true,
                 Message = null
             };
             try
             {
-                GAME_MANAGER.EndTurn(token);
+                GAME_MANAGER.PlayCard(token, playCardRequest.CardInGameId);
             }
-            catch (LogicExecutionException ex)
+            catch (LogicExecutionException e)
             {
                 response.Successfulness = false;
-                response.Message = ex.Message;
+                response.Message = e.Message;
             }
             return response;
         }

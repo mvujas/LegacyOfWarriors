@@ -48,6 +48,7 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="GameLogicUtils\Game.cs" />
     <Compile Include="GameLogicUtils\LogicExecutionEngine.cs" />
+    <Compile Include="GameLogicUtils\LogicExecutionException.cs" />
     <Compile Include="GameLogicUtils\PlayerInGame.cs" />
     <Compile Include="Interface\IEventHandlingContainer.cs" />
     <Compile Include="Interface\IMessageHandlingContainer.cs" />

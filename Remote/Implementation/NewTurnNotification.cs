@@ -15,5 +15,7 @@ namespace Remote.Implementation
         public int Mana { get; set; }
         public CardInGame DrawnCard { get; set; }
         public CardDrawingOutcome DrawingOutcome { get; set; }
+        public int FatiqueDamage { get; set; }
+        public int RemainingHealth { get; set; }
     }
 }

@@ -24,6 +24,8 @@ namespace Utils.GameLogicUtils
         public int Health { get; set; }
         public int Mana { get; set; }
 
+        public int CurrentFatiqueDamage { get; set; }
+
         private int m_maxHandSize = 5;
 
         public PossibleCardPlace[] places = null;
@@ -99,6 +101,7 @@ namespace Utils.GameLogicUtils
             var deck = Cards[PossibleCardPlace.DECK];
             var hand = Cards[PossibleCardPlace.HAND];
             CardInGame topOfTheDeck = deck.FirstOrDefault();
+            Console.WriteLine("Top of the deck: " + topOfTheDeck);
             if (topOfTheDeck == default)
             {
                 return CardDrawingOutcome.EMPTY_DECK;

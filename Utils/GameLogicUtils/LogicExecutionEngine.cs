@@ -78,21 +78,32 @@ namespace Utils.GameLogicUtils
             owner.MoveCard(card.InGameId, PossibleCardPlace.GRAVEYARD);
         }
 
-        public virtual void PlayCard(Game game, int playerIndex, int cardToBePlayed)
+        public virtual CardInGame PlayCard(Game game, int playerIndex, int cardToBePlayed)
         {
             if(game.IndexOfPlayerWhoPlayTheTurn != playerIndex)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Igrač nije na potezu");
             }
             PlayerInGame player = game.Players[playerIndex];
             if (!player.DoesPlayerOwnCard(cardToBePlayed, out PossibleCardPlace place) || place != PossibleCardPlace.HAND)
             {
-                // Baci izuzetak
+                throw new LogicExecutionException("Data karta nije u igračevoj ruci");
             }
+            if(!player.Cards.TryGetValue(PossibleCardPlace.FIELD, out LinkedList<CardInGame> field) || field.Count >= GameConfig.FIELD_SIZE)
+            {
+                throw new LogicExecutionException("Nema više mesta na terenu");
+            }
+            player.GetCard(cardToBePlayed, out CardInGame cardInGame);
+            if(player.Mana < cardInGame.Cost)
+            {
+                throw new LogicExecutionException("Igrač nema dovoljno mane da bi igrao kartu");
+            }
+            player.Mana -= cardInGame.Cost;
             player.MoveCard(cardToBePlayed, PossibleCardPlace.FIELD);
+            return cardInGame;
         }
 
-        public virtual CardDrawingOutcome NewTurn(Game game, out int nextPlayerIndex, out CardInGame card, out int mana, bool isFirstTurn = false)
+        public virtual CardDrawingOutcome NewTurn(Game game, out int nextPlayerIndex, out CardInGame card, out int mana, out int fatiqueDamage, bool isFirstTurn = false)
         {
             if(isFirstTurn)
             {
@@ -108,7 +119,15 @@ namespace Utils.GameLogicUtils
             var player = game.Players[nextPlayerIndex];
             player.Mana = Math.Min((game.AccumulativeTurn / game.Players.Length) + 1, GameConfig.MAX_MANA);
             mana = player.Mana;
-            return player.MoveFirstFromDeckToHand(out card); 
+            var outcome =  player.MoveFirstFromDeckToHand(out card);
+            fatiqueDamage = 0;
+            if(outcome == CardDrawingOutcome.EMPTY_DECK)
+            {
+                player.CurrentFatiqueDamage++;
+                player.Health -= player.CurrentFatiqueDamage;
+                fatiqueDamage = player.CurrentFatiqueDamage;
+            }
+            return outcome;
         }
 
         public void DrawStartingHand(Game game, int playerIndex, int initialHandSize)

@@ -140,7 +140,7 @@ namespace GameServer.GameServerLogic
             lock(gameWrapper.@lock)
             {
                 CardDrawingOutcome drawingOutcome = 
-                    executionEngine.NewTurn(gameWrapper.Game, out int playerIndex, out CardInGame card, out int mana, isFirstTurn);
+                    executionEngine.NewTurn(gameWrapper.Game, out int playerIndex, out CardInGame card, out int mana, out int fatiqueDamage, isFirstTurn);
                 for(int i = 0; i < gameWrapper.Tokens.Length; i++)
                 {
                     var token = gameWrapper.Tokens[i];
@@ -149,7 +149,9 @@ namespace GameServer.GameServerLogic
                         PlayerIndex = playerIndex,
                         DrawnCard = (i == playerIndex) ? card : null,
                         DrawingOutcome = drawingOutcome,
-                        Mana = mana
+                        Mana = mana,
+                        FatiqueDamage = fatiqueDamage,
+                        RemainingHealth = gameWrapper.Game.Players[playerIndex].Health
                     });
                 }
             }
@@ -162,16 +164,48 @@ namespace GameServer.GameServerLogic
             var gameWrapper = identity.GameWrapper;
             if(gameWrapper == null || identity.MatchmakingStatus != UserMatchmakingStatus.GAME)
             {
-                throw new MatchmakingException("Korisnik nije u igri");
+                throw new LogicExecutionException("Korisnik nije u igri");
             }
             lock(gameWrapper.@lock)
             {
                 var game = gameWrapper.Game;
                 if(gameWrapper.Tokens[game.IndexOfPlayerWhoPlayTheTurn] != token)
                 {
-                    throw new MatchmakingException("Igrač nije na potezu");
+                    throw new LogicExecutionException("Igrač nije na potezu");
                 }
                 NextTurn(gameWrapper);
+            }
+        }
+
+        public void PlayCard(AsyncUserToken userToken, int cardInGameId)
+        {
+            var identity = (ServerSideTokenIdentity)userToken.info;
+            var gameWrapper = identity.GameWrapper;
+            if (gameWrapper == null || identity.MatchmakingStatus != UserMatchmakingStatus.GAME)
+            {
+                throw new LogicExecutionException("Korisnik nije u igri");
+            }
+            lock (gameWrapper.@lock)
+            {
+                var game = gameWrapper.Game;
+                if (gameWrapper.Tokens[game.IndexOfPlayerWhoPlayTheTurn] != userToken)
+                {
+                    throw new LogicExecutionException("Igrač nije na potezu");
+                }
+
+                var playedCard = executionEngine.PlayCard(game, game.IndexOfPlayerWhoPlayTheTurn, cardInGameId);
+
+                var cardPlayedNotification = new CardPlayedNotification
+                {
+                    PlayerIndex = game.IndexOfPlayerWhoPlayTheTurn,
+                    PlayedCard = playedCard,
+                    RemainingMana = game.Players[game.IndexOfPlayerWhoPlayTheTurn].Mana
+                };
+                for (int i = 0; i < gameWrapper.Tokens.Length; i++)
+                {
+                    var token = gameWrapper.Tokens[i];
+                    Config.GameServer.Send(token, cardPlayedNotification);
+                }
             }
         }
     }

@@ -109,6 +109,7 @@
     <Compile Include="GameServerLogic\RequestHandling\Handlers\CardListRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\EndTurnRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\LoginHandler.cs" />
+    <Compile Include="GameServerLogic\RequestHandling\Handlers\PlayCardRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\QueueEntryRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\QueueExitRequestHandler.cs" />
     <Compile Include="GameServerLogic\RequestHandling\Handlers\RegistrationHandler.cs" />
