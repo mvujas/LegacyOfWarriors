@@ -26,7 +26,7 @@ namespace Utils.GameLogicUtils
 
         public int CurrentFatiqueDamage { get; set; }
 
-        private int m_maxHandSize = 5;
+        private int m_maxHandSize = ProjectLevelConfig.GameConfig.MAX_HAND_SIZE;
 
         public PossibleCardPlace[] places = null;
 

@@ -96,8 +96,6 @@ namespace Utils.GameLogicUtils
 
             attacked.Health -= card.Attack;
 
-            Console.WriteLine("Preostalo helta karti posle napada na igraca: " + card.Health);
-
             attackerRemainingHealth = card.Health;
             targetRemainingHealth = Math.Max(0, attacked.Health);
 
