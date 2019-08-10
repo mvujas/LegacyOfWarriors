@@ -153,7 +153,8 @@ namespace GameServer.GameServerLogic
                         DrawingOutcome = drawingOutcome,
                         Mana = mana,
                         FatiqueDamage = fatiqueDamage,
-                        RemainingHealth = gameWrapper.Game.Players[playerIndex].Health
+                        RemainingHealth = gameWrapper.Game.Players[playerIndex].Health,
+                        AccumulativeTurnCount = gameWrapper.Game.AccumulativeTurn
                     });
                 }
             }

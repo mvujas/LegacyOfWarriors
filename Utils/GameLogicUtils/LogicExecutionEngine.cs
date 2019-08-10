@@ -43,11 +43,18 @@ namespace Utils.GameLogicUtils
             attackerOwnerPlayer.GetCard(cardThatAttacks, out CardInGame attacker);
             attackedOwnerPlayer.GetCard(cardToBeAttacked, out CardInGame attacked);
 
+            if (attacker.LastAttackingTurn >= game.AccumulativeTurn)
+            {
+                throw new LogicExecutionException("Karta ne moze da napada u ovom potezu");
+            }
+
             attacked.Health -= attacker.Attack;
             attacker.Health -= attacked.Attack;
 
             attackerRemainingHealth = Math.Max(0, attacker.Health);
             targetRemainingHealth = Math.Max(0, attacked.Health);
+
+            attacker.LastAttackingTurn = game.AccumulativeTurn;
 
             if (attacked.Health <= 0)
             {
@@ -81,10 +88,20 @@ namespace Utils.GameLogicUtils
             }
 
             attacker.GetCard(cardThatAttacks, out CardInGame card);
+
+            if (card.LastAttackingTurn >= game.AccumulativeTurn)
+            {
+                throw new LogicExecutionException("Karta ne moze da napada u ovom potezu");
+            }
+
             attacked.Health -= card.Attack;
+
+            Console.WriteLine("Preostalo helta karti posle napada na igraca: " + card.Health);
 
             attackerRemainingHealth = card.Health;
             targetRemainingHealth = Math.Max(0, attacked.Health);
+
+            card.LastAttackingTurn = game.AccumulativeTurn;
 
             return attacked.Health <= 0;
         }
@@ -119,6 +136,7 @@ namespace Utils.GameLogicUtils
             }
             player.Mana -= cardInGame.Cost;
             player.MoveCard(cardToBePlayed, PossibleCardPlace.FIELD);
+            cardInGame.LastAttackingTurn = game.AccumulativeTurn;
             return cardInGame;
         }
 

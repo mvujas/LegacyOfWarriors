@@ -17,5 +17,6 @@ namespace Remote.Implementation
         public CardDrawingOutcome DrawingOutcome { get; set; }
         public int FatiqueDamage { get; set; }
         public int RemainingHealth { get; set; }
+        public int AccumulativeTurnCount { get; set; }
     }
 }

@@ -17,6 +17,7 @@ namespace Remote.InGameObjects
         public int Attack { get; set; }
         public int Health { get; set; }
         public int Cost { get; set; }
+        public int LastAttackingTurn { get; set; }
 
         public void SetCard(Card card)
         {
@@ -26,6 +27,7 @@ namespace Remote.InGameObjects
             Attack = card.Attack;
             Health = card.Health;
             Cost = card.Cost;
+            LastAttackingTurn = -1;
         }
     }
 }
