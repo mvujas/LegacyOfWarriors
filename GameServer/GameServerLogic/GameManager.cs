@@ -325,5 +325,84 @@ namespace GameServer.GameServerLogic
                 CheckIfPlayerDied(gameWrapper);
             }
         }
+
+        public void SuddenlyEndGameOnPlayerDisconnect(AsyncUserToken userToken)
+        {
+            ServerSideTokenIdentity identity = (ServerSideTokenIdentity)userToken.info;
+            lock (identity.MatchmakingLock)
+            {
+                if(identity.MatchmakingStatus != UserMatchmakingStatus.GAME)
+                {
+                    return;
+                }
+
+                GameWrapper gameWrapper = identity.GameWrapper;
+
+                var game = gameWrapper.Game;
+
+                if(game.Players.Length != 2)
+                {
+                    // Only for 2 player games
+                    return;
+                }
+
+                lock(gameWrapper.@lock)
+                {
+                    GameFinishedNotification gameFinishedNotification = new GameFinishedNotification();
+
+                    
+                    for (int i = 0; i < gameWrapper.Tokens.Length; i++)
+                    {
+                        var token = gameWrapper.Tokens[i];
+                        if (token == userToken)
+                        {
+                            gameFinishedNotification.WinnerPlayerId = 1 - i;
+                            break;
+                        }
+                    }
+
+                    foreach (var token in gameWrapper.Tokens)
+                    {
+                        if(token != userToken)
+                        {
+                            Config.GameServer.Send(token, gameFinishedNotification);
+                        }
+                    }
+
+                    TerminateGame(gameWrapper);
+                }
+            }
+        }
+
+        public void CancelGamePreparation(AsyncUserToken userToken)
+        {
+            ServerSideTokenIdentity identity = (ServerSideTokenIdentity)userToken.info;
+            lock (identity.MatchmakingLock)
+            {
+                if (identity.MatchmakingStatus != UserMatchmakingStatus.PREPARING_GAME)
+                {
+                    return;
+                }
+
+                GameWrapper gameWrapper = identity.GameWrapper;
+
+                var game = gameWrapper.Game;
+
+                lock (gameWrapper.@lock)
+                {
+                    GameCanceledNotification gameCanceledNotification = new GameCanceledNotification();
+
+                    foreach (var token in gameWrapper.Tokens)
+                    {
+                        if (token != userToken)
+                        {
+                            Config.GameServer.Send(token, gameCanceledNotification);
+                        }
+                    }
+
+                    TerminateGame(gameWrapper);
+                }
+            }
+        }
     }
 }

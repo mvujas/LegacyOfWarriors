@@ -51,6 +51,7 @@
     <Compile Include="Implementation\AttackResponse.cs" />
     <Compile Include="Implementation\EndTurnRequest.cs" />
     <Compile Include="Implementation\EndTurnResponse.cs" />
+    <Compile Include="Implementation\GameCanceledNotification.cs" />
     <Compile Include="Implementation\GameFinishedNotification.cs" />
     <Compile Include="Implementation\GameFoundNotification.cs" />
     <Compile Include="Implementation\InvalidRequest.cs" />

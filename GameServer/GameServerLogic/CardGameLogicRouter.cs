@@ -62,9 +62,16 @@ namespace GameServer.GameServerLogic
                     catch (Exception) { }
                     break;
                 }
-                case UserMatchmakingStatus.GAME:
-
+                case UserMatchmakingStatus.PREPARING_GAME:
+                {
+                    GameManager.GetInstance().CancelGamePreparation(userToken);
                     break;
+                }
+                case UserMatchmakingStatus.GAME:
+                {
+                    GameManager.GetInstance().SuddenlyEndGameOnPlayerDisconnect(userToken);
+                    break;
+                }
             }
         }
 
