@@ -37,7 +37,7 @@ namespace GameServer.Logic
                 if (e.IsDuplicateEntry())
                 {
                     throw new InvalidLogicDataException(
-                        "Vec postoji korisnik sa datim korisnickim imenom");
+                        "Već postoji korisnik sa datim korisničkim imenom");
                 }
             }
         }
@@ -51,11 +51,11 @@ namespace GameServer.Logic
             if(user == null)
             {
                 throw new InvalidLogicDataException(
-                    "Ne postoji korisnik pod datim korisnickim imenom");
+                    "Ne postoji korisnik pod datim korisničkim imenom");
             }
             if(!BCryptHelper.CheckPassword(password, user.PasswordHash))
             {
-                throw new InvalidLogicDataException("Pogresna lozinka");
+                throw new InvalidLogicDataException("Pogrešna lozinka");
             }
             return user;
         }

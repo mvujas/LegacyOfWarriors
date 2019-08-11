@@ -15,22 +15,22 @@ namespace Utils.GameLogicUtils
         {
             if(playerIndex > game.Players.Length || attackedPlayer > game.Players.Length)
             {
-                throw new LogicExecutionException("Bar jedan od igraca je nevalidan");
+                throw new LogicExecutionException("Bar jedan od igrača je nevalidan");
             }
 
             int attackerOwner = game.IndexOfPlayerThatOwnsCard(cardThatAttacks);
             int attackedOwner = game.IndexOfPlayerThatOwnsCard(cardToBeAttacked);
             if(playerIndex != attackerOwner)
             {
-                throw new LogicExecutionException("Igrac ne poseduje datu kartu");
+                throw new LogicExecutionException("Igrač ne poseduje datu kartu");
             }
             if (attackedPlayer != attackedOwner)
             {
-                throw new LogicExecutionException("Napadnuti igrac ne poseduje datu kartu");
+                throw new LogicExecutionException("Napadnuti igrač ne poseduje datu kartu");
             }
             if (attackedOwner == playerIndex)
             {
-                throw new LogicExecutionException("Igrac ne moze napasti svoju kartu");
+                throw new LogicExecutionException("Igrač ne može napasti svoju kartu");
             }
             var attackerOwnerPlayer = game.Players[attackerOwner];
             var attackedOwnerPlayer = game.Players[attackedOwner];
@@ -45,7 +45,7 @@ namespace Utils.GameLogicUtils
 
             if (attacker.LastAttackingTurn >= game.AccumulativeTurn)
             {
-                throw new LogicExecutionException("Karta ne moze da napada u ovom potezu");
+                throw new LogicExecutionException("Karta ne može da napada u ovom potezu");
             }
 
             attacked.Health -= attacker.Attack;
@@ -72,26 +72,26 @@ namespace Utils.GameLogicUtils
         {
             if (playerIndex > game.Players.Length || playerIndexToBeAttacked > game.Players.Length)
             {
-                throw new LogicExecutionException("Bar jedan od igraca je nevalidan");
+                throw new LogicExecutionException("Bar jedan od igrača je nevalidan");
             }
 
             if (playerIndex == playerIndexToBeAttacked)
             {
-                throw new LogicExecutionException("Igrac ne moze napasti samog sebe");
+                throw new LogicExecutionException("Igrač ne moze napasti samog sebe");
             }
             PlayerInGame attacker = game.Players[playerIndex];
             PlayerInGame attacked = game.Players[playerIndexToBeAttacked];
             if(!attacker.DoesPlayerOwnCard(cardThatAttacks, out PossibleCardPlace place) ||
                 place != PossibleCardPlace.FIELD)
             {
-                throw new LogicExecutionException("Karta nije na igracevom terenu");
+                throw new LogicExecutionException("Karta nije na igračevom terenu");
             }
 
             attacker.GetCard(cardThatAttacks, out CardInGame card);
 
             if (card.LastAttackingTurn >= game.AccumulativeTurn)
             {
-                throw new LogicExecutionException("Karta ne moze da napada u ovom potezu");
+                throw new LogicExecutionException("Karta ne može da napada u ovom potezu");
             }
 
             attacked.Health -= card.Attack;
